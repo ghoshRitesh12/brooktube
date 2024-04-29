@@ -11,12 +11,12 @@ import (
 
 type YtParser struct{}
 
-func NewParser() *YtParser {
+func New() *YtParser {
 	return &YtParser{}
 }
 
 // utility function to make http requests
-func fetch[T any](method string, url string, body map[string]any, headers map[string]string) (T, error) {
+func fetch[T any](method string, url string, reqBody map[string]any, headers map[string]string) (T, error) {
 	var respBody T
 
 	ytContext := utils.NewYtMusicContext()
@@ -27,7 +27,10 @@ func fetch[T any](method string, url string, body map[string]any, headers map[st
 		// },
 	}
 
-	for key, val := range body {
+	for key, val := range reqBody {
+		if val.(string) == "" {
+			continue
+		}
 		payload[key] = val
 	}
 
