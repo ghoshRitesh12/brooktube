@@ -6,8 +6,8 @@ import (
 	"github.com/ghoshRitesh12/yt_music/parsers"
 )
 
-func New() *parsers.YtParser {
+func NewParser() *parsers.YtParser {
 	fmt.Println("hello yt")
 
-	return parsers.NewParser()
+	return parsers.New()
 }
