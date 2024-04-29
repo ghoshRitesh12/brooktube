@@ -5,31 +5,21 @@ import (
 	"testing"
 
 	ytmusic "github.com/ghoshRitesh12/yt_music"
+	"github.com/ghoshRitesh12/yt_music/parsers"
+	"github.com/ghoshRitesh12/yt_music/types/search"
 )
 
 func TestMain(t *testing.T) {
-	parser := ytmusic.New()
+	parser := ytmusic.NewParser()
 
-	// data, err := parser.GetSearchSuggestions("black clover")
-	// if err != nil {
-	// 	t.Fatal(err)
-	// 	return
-	// }
+	d, err := parser.GetSearchResults(parsers.SearchParserParams{
+		Query:    "black clover",
+		Category: search.ARTIST_SEARCH_KEY,
+	})
 
-	// for _, c := range data.Contents {
-	// 	fmt.Printf("%+v\n", c.SearchSuggestionsSectionRenderer.Contents)
-	// 	fmt.Println()
-	// 	for _, cc := range c.SearchSuggestionsSectionRenderer.Contents {
-	// 		fmt.Println(cc.SearchSuggestionRenderer.NavigationEndpoint.SearchEndpoint.Query)
-	// 	}
-	// }
-
-	result, err := parser.GetSearchResults("black+clover")
-
+	fmt.Printf("Data: %+v", d)
 	if err != nil {
 		t.Fatal(err)
 		return
 	}
-
-	fmt.Printf("%+v\n", result.Contents)
 }
