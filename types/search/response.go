@@ -17,97 +17,92 @@ type RespResult struct {
 }
 
 type RespResultSection struct {
-	// for top results and community playlists
-	MusicCardShelfRenderer struct {
-		Title struct {
-			Runs []struct {
-				Text string `json:"text"`
-			} `json:"runs"`
-		} `json:"title"`
-
-		Buttons []struct {
-			ButtonRenderer struct {
-				Text struct {
-					Runs []struct {
-						Text string `json:"text"`
-					} `json:"runs"`
-				} `json:"text"`
-
-				Accessibility struct {
-					Label string `json:"label"`
-				} `json:"accessibility"`
-
-				Command struct {
-					WatchPlaylistEndpoint struct {
-						PlaylistID string `json:"playlistId"`
-						Params     string `json:"params"`
-					} `json:"watchPlaylistEndpoint"`
-				} `json:"command"`
-			} `json:"buttonRenderer"`
-		} `json:"buttons"`
-	} `json:"musicCardShelfRenderer,omitempty"`
-
-	// for songs, albums, videos, etc.
+	// for community playlists, songs, albums, videos, etc.
 	MusicShelfRenderer struct {
 		Title struct {
 			Runs []struct {
-				Text string `json:"text"`
+				Text string
 			} `json:"runs"`
 		} `json:"title"`
 
-		Contents []struct {
-			MusicResponsiveListItemRenderer struct {
-				FlexColumns []struct {
-					MusicResponsiveListItemFlexColumnRenderer struct {
+		Contents      []RespSectionContent `json:"contents"`
+		Continuations []RespContinuation   `json:"continuations,omitempty"`
+	} `json:"musicShelfRenderer,omitempty"`
+}
+
+type RespSectionContent struct {
+	MusicResponsiveListItemRenderer struct {
+		FlexColumns []RespFlexColumns `json:"flexColumns"`
+
+		Menu struct {
+			MenuRenderer struct {
+				Items []struct {
+					MenuNavigationItemRenderer struct {
 						Text struct {
 							Runs []struct {
-								Text string `json:"text"`
+								Text string
 							} `json:"runs"`
 						} `json:"text"`
-						DisplayPriority string `json:"displayPriority"`
-					} `json:"musicResponsiveListItemFlexColumnRenderer"`
-				} `json:"flexColumns"`
 
-				Menu struct {
-					MenuRenderer struct {
-						Items []struct {
-							MenuNavigationItemRenderer struct {
-								Text struct {
-									Runs []struct {
-										Text string `json:"text"`
-									} `json:"runs"`
-								} `json:"text"`
+						NavigationEndpoint struct {
+							WatchPlaylistEndpoint struct {
+								PlaylistID string `json:"playlistId"`
+								Params     string `json:"params"`
+							} `json:"watchPlaylistEndpoint"`
+						} `json:"navigationEndpoint"`
+					} `json:"menuNavigationItemRenderer,omitempty"`
+				} `json:"items"`
+			} `json:"menuRenderer"`
+		} `json:"menu"`
 
-								NavigationEndpoint struct {
-									WatchPlaylistEndpoint struct {
-										PlaylistID string `json:"playlistId"`
-										Params     string `json:"params"`
-									} `json:"watchPlaylistEndpoint"`
-								} `json:"navigationEndpoint"`
-							} `json:"menuNavigationItemRenderer,omitempty"`
-						} `json:"items"`
-					} `json:"menuRenderer"`
-				} `json:"menu"`
+		PlaylistItemData struct {
+			VideoId string `json:"videoId"`
+		} `json:"playlistItemData,omitempty"`
 
-				PlaylistItemData struct {
-					VideoId string `json:"videoId"`
-				} `json:"playlistItemData,omitempty"`
-			} `json:"musicResponsiveListItemRenderer"`
-		} `json:"contents"`
+		NavigationEndpoint RespNavigationEndpoint `json:"navigationEndpoint,omitempty"`
+	} `json:"musicResponsiveListItemRenderer"`
+}
 
-		// to show more results
-		BottomText struct {
-			Runs []struct {
-				Text string `json:"text"`
-			} `json:"runs"`
-		} `json:"bottomText"`
+type RespFlexColumns struct {
+	MusicResponsiveListItemFlexColumnRenderer struct {
+		Text struct {
+			Runs []RespFlexColumnRun
+		} `json:"text"`
+	} `json:"musicResponsiveListItemFlexColumnRenderer"`
+}
 
-		// for further navigation and fetching data
-		BottomEndpoint struct {
-			SearchEndpoint struct {
-				Query  string `json:"query"`
-				Params string `json:"params"`
-			} `json:"searchEndpoint"`
-		} `json:"bottomEndpoint"`
-	} `json:"musicShelfRenderer,omitempty"`
+// `json:"navigationEndpoint,omitempty"`
+type RespContinuation struct {
+	NextContinuationData struct {
+		Continuation        string `json:"continuation"`
+		ClickTrackingParams string `json:"clickTrackingParams"`
+	} `json:"nextContinuationData"`
+}
+
+type RespFlexColumnRun struct {
+	Text               string
+	NavigationEndpoint RespNavigationEndpoint `json:"navigationEndpoint,omitempty"`
+}
+
+type RespNavigationEndpoint struct {
+	WatchEndpoint struct {
+		VideoID string `json:"videoId,omitempty"`
+
+		WatchEndpointMusicSupportedConfigs struct {
+			WatchEndpointMusicConfig struct {
+				MusicVideoType string `json:"musicVideoType,omitempty"`
+			} `json:"watchEndpointMusicConfig,omitempty"`
+		} `json:"watchEndpointMusicSupportedConfigs,omitempty"`
+		//
+	} `json:"watchEndpoint,omitempty"`
+
+	BrowseEndpoint struct {
+		BrowseID string `json:"browseId,omitempty"`
+
+		BrowseEndpointContextSupportedConfigs struct {
+			BrowseEndpointContextMusicConfig struct {
+				PageType string `json:"pageType,omitempty"`
+			} `json:"browseEndpointContextMusicConfig,omitempty"`
+		} `json:"browseEndpointContextSupportedConfigs,omitempty"`
+	} `json:"browseEndpoint,omitempty"`
 }
