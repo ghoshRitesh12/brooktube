@@ -6,18 +6,15 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ghoshRitesh12/yt_music/utils"
+	"github.com/ghoshRitesh12/brooktube/utils"
 )
 
-func fetch[T any](method string, url string, reqBody map[string]any, headers map[string]string) (T, error) {
+func fetch[T any](method string, reqUrl string, reqBody map[string]any, reqHeaders map[string]string) (T, error) {
 	var respBody T
 
 	ytContext := utils.NewYtMusicContext()
 	payload := map[string]any{
 		"context": ytContext,
-		// "user": map[string]any{
-		// 	"lockedSafetyMode": false,
-		// },
 	}
 
 	for key, val := range reqBody {
@@ -32,7 +29,7 @@ func fetch[T any](method string, url string, reqBody map[string]any, headers map
 		return respBody, err
 	}
 
-	req, _ := http.NewRequest(method, url, bytes.NewBuffer(jsonPayload))
+	req, _ := http.NewRequest(method, reqUrl, bytes.NewBuffer(jsonPayload))
 
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("Origin", utils.HOST)
@@ -40,7 +37,13 @@ func fetch[T any](method string, url string, reqBody map[string]any, headers map
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", utils.USER_AGENT_HEADER)
 
-	for key, val := range headers {
+	queryParams := req.URL.Query()
+	queryParams.Set("key", utils.GOOG_API_KEY)
+	queryParams.Set("alt", "json")
+
+	req.URL.RawQuery = queryParams.Encode()
+
+	for key, val := range reqHeaders {
 		req.Header.Set(key, val)
 	}
 
