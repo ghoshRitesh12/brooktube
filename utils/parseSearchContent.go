@@ -3,7 +3,7 @@ package utils
 import (
 	"strings"
 
-	"github.com/ghoshRitesh12/yt_music/types/search"
+	"github.com/ghoshRitesh12/brooktube/models/search"
 )
 
 func ParseSearchContent(category search.SearchCategory, shelfContents []search.RespSectionContent) search.ResultContent {
@@ -23,12 +23,26 @@ func ParseSearchContent(category search.SearchCategory, shelfContents []search.R
 					songOrVideo.Name = ParseYtTextField(ParseYtTextParams{
 						FlexColumnRuns: flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs,
 					})
-				} else {
-					otherInfoBuilder.WriteString(
-						ParseYtTextField(ParseYtTextParams{
-							FlexColumnRuns: flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs,
-						}) + separator,
-					)
+					continue
+				}
+
+				otherInfoBuilder.WriteString(
+					ParseYtTextField(ParseYtTextParams{
+						FlexColumnRuns: flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs,
+					}) + separator,
+				)
+
+				if i == 1 {
+					browseEndpoint := flexColumn.MusicResponsiveListItemFlexColumnRenderer.
+						Text.Runs[0].NavigationEndpoint.BrowseEndpoint
+
+					if strings.Contains(
+						browseEndpoint.BrowseEndpointContextSupportedConfigs.
+							BrowseEndpointContextMusicConfig.PageType,
+						"MUSIC_PAGE_TYPE_ARTIST",
+					) {
+						songOrVideo.ArtistChannelId = browseEndpoint.BrowseID
+					}
 				}
 			}
 
@@ -63,7 +77,7 @@ func ParseSearchContent(category search.SearchCategory, shelfContents []search.R
 			if strings.Contains(
 				browseEndpoint.BrowseEndpointContextSupportedConfigs.
 					BrowseEndpointContextMusicConfig.PageType,
-				"ARTIST",
+				"MUSIC_PAGE_TYPE_ARTIST",
 			) {
 				artist.ArtistChannelId = browseEndpoint.BrowseID
 			}
