@@ -6,7 +6,7 @@ import (
 	"github.com/ghoshRitesh12/brooktube/parsers"
 )
 
-func NewParser() *parsers.YtParser {
+func NewParser() *parsers.YtMusicParser {
 	fmt.Println("hello yt")
 
 	return parsers.New()
