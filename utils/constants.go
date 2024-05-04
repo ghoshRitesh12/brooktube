@@ -25,5 +25,6 @@ const (
 const (
 	GOOG_FIELD_MASK string = "*"
 	GOOG_VISITOR_ID string = "CgtKc19vbFBzMEpYcyjfz6-xBjIKCgJJThIEGgAgJA%3D%3D"
-	GOOG_API_KEY    string = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8"
+	GOOG_API_KEY    string = "AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30"
+	// GOOG_API_KEY_2    string = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8"
 )
