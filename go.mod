@@ -1,3 +1,3 @@
-module github.com/ghoshRitesh12/yt_music
+module github.com/ghoshRitesh12/brooktube
 
 go 1.22
