@@ -3,7 +3,7 @@ package utils
 import (
 	"strings"
 
-	"github.com/ghoshRitesh12/yt_music/types/search"
+	"github.com/ghoshRitesh12/brooktube/models/search"
 )
 
 type ParseYtTextParams struct {
