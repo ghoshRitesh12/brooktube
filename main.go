@@ -1,9 +1,9 @@
-package ytmusic
+package brooktube
 
 import (
 	"fmt"
 
-	"github.com/ghoshRitesh12/yt_music/parsers"
+	"github.com/ghoshRitesh12/brooktube/parsers"
 )
 
 func NewParser() *parsers.YtParser {
