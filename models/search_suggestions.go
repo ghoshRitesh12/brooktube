@@ -1,4 +1,4 @@
-package types
+package models
 
 // SSg stands for SearchSuggestions
 
