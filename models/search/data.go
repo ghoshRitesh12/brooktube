@@ -16,12 +16,12 @@ type ResultContent struct {
 	FeaturedPlaylists  []FeaturedPlaylist  `json:"featuredPlaylists"`
 }
 
-// TODO: add channel id for song or videos
 type SongOrVideo struct {
 	VideoId         string `json:"videoId"`
 	Name            string `json:"name"`
 	OtherInfo       string `json:"otherInfo"`
 	ArtistChannelId string `json:"artistChannelId"`
+	PlaylistId      string `json:"playlistId"`
 }
 
 type Artist struct {
