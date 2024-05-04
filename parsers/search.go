@@ -1,29 +1,39 @@
 package parsers
 
 import (
-	"slices"
-
-	"github.com/ghoshRitesh12/yt_music/requests"
-	"github.com/ghoshRitesh12/yt_music/types/search"
-	"github.com/ghoshRitesh12/yt_music/utils"
+	"github.com/ghoshRitesh12/brooktube/models/search"
+	"github.com/ghoshRitesh12/brooktube/requests"
+	"github.com/ghoshRitesh12/brooktube/utils"
 )
 
 type SearchParserParams struct {
-	Query    string
-	Category search.SearchCategory
+	Category          search.SearchCategory // eg: community_playlists, song, video, album, artist, etc.
+	ContinuationToken string                // token used for fetching paginated data
 }
 
-// Performs a POST to fetch search results
-func (p *YtParser) GetSearchResults(params SearchParserParams) (search.Result, error) {
+func (p *YtMusicParser) GetSearchResults(query string, params SearchParserParams) (search.Result, error) {
 	result := search.Result{}
 
-	if params.Category == "" || !slices.Contains(search.SEARCH_PARAMS_KEYS, params.Category) {
+	if _, ok := search.SEARCH_PARAMS_KEYS[params.Category]; !ok || params.Category == "" {
 		params.Category = search.SONG_SEARCH_KEY
 	}
 
-	data, err := requests.FetchSearchResults(params.Query, params.Category)
+	data, err := requests.FetchSearchResults(
+		query,
+		params.Category,
+		params.ContinuationToken,
+	)
 	if err != nil {
 		return result, err
+	}
+
+	if params.ContinuationToken != "" {
+		section := data.ContinuationContents.MusicShelfContinuation
+
+		result.ContinuationToken = utils.PickContinuationToken(section.Continuations)
+		result.Content = utils.ParseSearchContent(params.Category, section.Contents)
+
+		return result, nil
 	}
 
 	sections := data.Contents.TabbedSearchResultsRenderer.
@@ -31,14 +41,13 @@ func (p *YtParser) GetSearchResults(params SearchParserParams) (search.Result, e
 	if len(sections) == 0 || len(sections) > 1 {
 		return result, nil
 	}
+	section := sections[0]
 
-	if len(sections[0].MusicShelfRenderer.Continuations) > 0 {
-		result.ContinuationToken = sections[0].MusicShelfRenderer.Continuations[0].NextContinuationData.Continuation
-	}
+	result.ContinuationToken = utils.PickContinuationToken(section.MusicShelfRenderer.Continuations)
 	result.Title = utils.ParseYtTextField(utils.ParseYtTextParams{
-		NormalRuns: sections[0].MusicShelfRenderer.Title.Runs,
+		NormalRuns: section.MusicShelfRenderer.Title.Runs,
 	})
-	result.Content = utils.ParseSearchContent(params.Category, sections[0].MusicShelfRenderer.Contents)
+	result.Content = utils.ParseSearchContent(params.Category, section.MusicShelfRenderer.Contents)
 
 	return result, nil
 }
