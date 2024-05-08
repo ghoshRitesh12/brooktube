@@ -146,11 +146,10 @@ func ParseSearchContent(category search.SearchCategory, shelfContents []search.R
 
 func parseSongOrVideoContents(shelfContents []search.RespSectionContent) []search.SongOrVideo {
 	songOrVideos := make([]search.SongOrVideo, 0, len(shelfContents))
-	otherInfoBuilder := strings.Builder{}
 
 	for _, content := range shelfContents {
 		songOrVideo := search.SongOrVideo{
-			VideoId: content.MusicResponsiveListItemRenderer.PlaylistItemData.VideoId,
+			SongOrVideoId: content.MusicResponsiveListItemRenderer.PlaylistItemData.VideoId,
 		}
 
 		for i, flexColumn := range content.MusicResponsiveListItemRenderer.FlexColumns {
@@ -161,13 +160,9 @@ func parseSongOrVideoContents(shelfContents []search.RespSectionContent) []searc
 				continue
 			}
 
-			otherInfoBuilder.WriteString(
-				ParseYtTextField(ParseYtTextParams{
-					FlexColumnRuns: flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs,
-				}) + OTHER_INFO_SEPARATOR,
-			)
-
 			if i == 1 {
+				songOrVideo.ArtistName = flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs[0].Text
+
 				channelBrowseEndpoint := flexColumn.MusicResponsiveListItemFlexColumnRenderer.
 					Text.Runs[0].NavigationEndpoint.BrowseEndpoint
 
@@ -178,6 +173,8 @@ func parseSongOrVideoContents(shelfContents []search.RespSectionContent) []searc
 					songOrVideo.ArtistChannelId = channelBrowseEndpoint.BrowseID
 				}
 
+				songOrVideo.AlbumName = flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs[2].Text
+
 				albumBrowseEndpoint := flexColumn.MusicResponsiveListItemFlexColumnRenderer.
 					Text.Runs[2].NavigationEndpoint.BrowseEndpoint
 
@@ -185,16 +182,23 @@ func parseSongOrVideoContents(shelfContents []search.RespSectionContent) []searc
 					BrowseEndpointContextSupportedConfigs.
 					BrowseEndpointContextMusicConfig.
 					PageType == "MUSIC_PAGE_TYPE_ALBUM" {
-					songOrVideo.PlaylistId = albumBrowseEndpoint.BrowseID
+					songOrVideo.AlbumId = albumBrowseEndpoint.BrowseID
 				}
-			}
-		}
 
-		otherInfo, _ := strings.CutSuffix(otherInfoBuilder.String(), OTHER_INFO_SEPARATOR)
-		songOrVideo.OtherInfo = otherInfo
+				songOrVideo.Duration = flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs[4].Text
+
+				continue
+			}
+
+			songOrVideo.PlaysCount = strings.Split(
+				flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs[0].Text,
+				" plays",
+			)[0]
+
+		}
+		// OTHER_INFO_SEPARATOR
 
 		songOrVideos = append(songOrVideos, songOrVideo)
-		otherInfoBuilder.Reset()
 	}
 
 	return songOrVideos
