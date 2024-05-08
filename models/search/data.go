@@ -17,13 +17,13 @@ type ResultContent struct {
 }
 
 type SongOrVideo struct {
-	SongOrVideoId   string `json:"songOrVideoId"`
+	Id              string `json:"id"`
 	Name            string `json:"name"`
 	AlbumName       string `json:"albumName"`
 	AlbumId         string `json:"albumId"`
 	ArtistName      string `json:"artistName"`
 	ArtistChannelId string `json:"artistChannelId"`
-	Duration        string `json:"runtime"`
+	Duration        string `json:"duration"`
 	PlaysCount      string `json:"playsCount"`
 }
 
