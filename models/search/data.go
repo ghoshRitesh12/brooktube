@@ -24,25 +24,29 @@ type SongOrVideo struct {
 	ArtistName      string `json:"artistName"`
 	ArtistChannelId string `json:"artistChannelId"`
 	Duration        string `json:"duration"`
-	PlaysCount      string `json:"playsCount"`
+	Interactions    string `json:"interactions"`
 }
 
 type Artist struct {
-	Name            string `json:"name"`
-	OtherInfo       string `json:"otherInfo"`
-	ArtistChannelId string `json:"artistChannelId"`
+	Name        string `json:"name"`
+	Subscribers string `json:"subscribers"`
+	ChannelId   string `json:"channelId"`
 }
 
 type Album struct {
 	Name            string `json:"name"`
 	OtherInfo       string `json:"otherInfo"`
+	ArtistName      string `json:"artistName"`
 	ArtistChannelId string `json:"artistChannelId"`
+	YearOfRelease   string `json:"yearOfRelease"`
 }
 
 type CommunityPlaylist struct {
-	Name       string `json:"name"`
-	OtherInfo  string `json:"otherInfo"`
-	PlaylistId string `json:"playlistId"`
+	Name            string `json:"name"`
+	OtherInfo       string `json:"otherInfo"`
+	PlaylistId      string `json:"playlistId"`
+	ArtistChannelId string `json:"artistChannelId"`
+	Interactions    string `json:"interactions"`
 }
 
 type FeaturedPlaylist struct {
