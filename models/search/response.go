@@ -99,13 +99,6 @@ type RespFlexColumnRun struct {
 type RespNavigationEndpoint struct {
 	WatchEndpoint struct {
 		VideoID string `json:"videoId,omitempty"`
-
-		WatchEndpointMusicSupportedConfigs struct {
-			WatchEndpointMusicConfig struct {
-				MusicVideoType string `json:"musicVideoType,omitempty"`
-			} `json:"watchEndpointMusicConfig,omitempty"`
-		} `json:"watchEndpointMusicSupportedConfigs,omitempty"`
-		//
 	} `json:"watchEndpoint,omitempty"`
 
 	BrowseEndpoint struct {
