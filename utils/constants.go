@@ -28,3 +28,5 @@ const (
 	GOOG_API_KEY    string = "AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30"
 	// GOOG_API_KEY_2    string = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8"
 )
+
+const OTHER_INFO_SEPARATOR string = " • "
