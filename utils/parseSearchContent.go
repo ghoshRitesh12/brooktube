@@ -11,7 +11,7 @@ func ParseSearchContent(category search.SearchCategory, shelfContents []search.R
 
 	switch category {
 	case search.SONG_SEARCH_KEY, search.VIDEO_SEARCH_KEY:
-		resultContent.SongOrVideos = parseSongOrVideoContents(shelfContents)
+		resultContent.SongOrVideos = parseSongOrVideoContents(shelfContents, category)
 
 	case search.ARTIST_SEARCH_KEY:
 		otherInfoBuilder := strings.Builder{}
@@ -39,7 +39,7 @@ func ParseSearchContent(category search.SearchCategory, shelfContents []search.R
 			if browseEndpoint.
 				BrowseEndpointContextSupportedConfigs.
 				BrowseEndpointContextMusicConfig.
-				PageType == "MUSIC_PAGE_TYPE_ARTIST" {
+				PageType == MUSIC_PAGE_TYPE_ARTIST {
 				artist.ArtistChannelId = browseEndpoint.BrowseID
 			}
 
@@ -71,7 +71,7 @@ func ParseSearchContent(category search.SearchCategory, shelfContents []search.R
 				if channelBrowseEndpoint.
 					BrowseEndpointContextSupportedConfigs.
 					BrowseEndpointContextMusicConfig.
-					PageType == "MUSIC_PAGE_TYPE_ARTIST" {
+					PageType == MUSIC_PAGE_TYPE_ARTIST {
 					album.ArtistChannelId = channelBrowseEndpoint.BrowseID
 				}
 			}
@@ -106,7 +106,7 @@ func ParseSearchContent(category search.SearchCategory, shelfContents []search.R
 			if playlistBrowseEndpoint.
 				BrowseEndpointContextSupportedConfigs.
 				BrowseEndpointContextMusicConfig.
-				PageType == "MUSIC_PAGE_TYPE_PLAYLIST" {
+				PageType == MUSIC_PAGE_TYPE_PLAYLIST {
 				communityPlaylist.PlaylistId = playlistBrowseEndpoint.BrowseID
 			}
 
@@ -144,7 +144,7 @@ func ParseSearchContent(category search.SearchCategory, shelfContents []search.R
 	return resultContent
 }
 
-func parseSongOrVideoContents(shelfContents []search.RespSectionContent) []search.SongOrVideo {
+func parseSongOrVideoContents(shelfContents []search.RespSectionContent, category search.SearchCategory) []search.SongOrVideo {
 	songOrVideos := make([]search.SongOrVideo, 0, len(shelfContents))
 
 	for _, content := range shelfContents {
@@ -166,14 +166,20 @@ func parseSongOrVideoContents(shelfContents []search.RespSectionContent) []searc
 				channelBrowseEndpoint := flexColumn.MusicResponsiveListItemFlexColumnRenderer.
 					Text.Runs[0].NavigationEndpoint.BrowseEndpoint
 
-				if channelBrowseEndpoint.
+				if (channelBrowseEndpoint.
 					BrowseEndpointContextSupportedConfigs.
 					BrowseEndpointContextMusicConfig.
-					PageType == "MUSIC_PAGE_TYPE_ARTIST" {
+					PageType == MUSIC_PAGE_TYPE_ARTIST) ||
+					(channelBrowseEndpoint.
+						BrowseEndpointContextSupportedConfigs.
+						BrowseEndpointContextMusicConfig.
+						PageType == MUSIC_PAGE_TYPE_USER_CHANNEL) {
 					songOrVideo.ArtistChannelId = channelBrowseEndpoint.BrowseID
 				}
 
-				songOrVideo.AlbumName = flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs[2].Text
+				if category != search.VIDEO_SEARCH_KEY {
+					songOrVideo.AlbumName = flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs[2].Text
+				}
 
 				albumBrowseEndpoint := flexColumn.MusicResponsiveListItemFlexColumnRenderer.
 					Text.Runs[2].NavigationEndpoint.BrowseEndpoint
@@ -181,22 +187,19 @@ func parseSongOrVideoContents(shelfContents []search.RespSectionContent) []searc
 				if albumBrowseEndpoint.
 					BrowseEndpointContextSupportedConfigs.
 					BrowseEndpointContextMusicConfig.
-					PageType == "MUSIC_PAGE_TYPE_ALBUM" {
+					PageType == MUSIC_PAGE_TYPE_ALBUM {
 					songOrVideo.AlbumId = albumBrowseEndpoint.BrowseID
 				}
 
 				songOrVideo.Duration = flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs[4].Text
+				songOrVideo.Interactions = flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs[2].Text
 
 				continue
 			}
 
-			songOrVideo.PlaysCount = strings.Split(
-				flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs[0].Text,
-				" plays",
-			)[0]
+			songOrVideo.Interactions = flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs[0].Text
 
 		}
-		// OTHER_INFO_SEPARATOR
 
 		songOrVideos = append(songOrVideos, songOrVideo)
 	}
