@@ -11,51 +11,13 @@ func ParseSearchContent(category search.SearchCategory, shelfContents []search.R
 
 	switch category {
 	case search.SONG_SEARCH_KEY, search.VIDEO_SEARCH_KEY:
-		for _, content := range shelfContents {
-			separator := " • "
-			var otherInfoBuilder strings.Builder
-			songOrVideo := search.SongOrVideo{
-				VideoId: content.MusicResponsiveListItemRenderer.PlaylistItemData.VideoId,
-			}
-
-			for i, flexColumn := range content.MusicResponsiveListItemRenderer.FlexColumns {
-				if i == 0 {
-					songOrVideo.Name = ParseYtTextField(ParseYtTextParams{
-						FlexColumnRuns: flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs,
-					})
-					continue
-				}
-
-				otherInfoBuilder.WriteString(
-					ParseYtTextField(ParseYtTextParams{
-						FlexColumnRuns: flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs,
-					}) + separator,
-				)
-
-				if i == 1 {
-					browseEndpoint := flexColumn.MusicResponsiveListItemFlexColumnRenderer.
-						Text.Runs[0].NavigationEndpoint.BrowseEndpoint
-
-					if strings.Contains(
-						browseEndpoint.BrowseEndpointContextSupportedConfigs.
-							BrowseEndpointContextMusicConfig.PageType,
-						"MUSIC_PAGE_TYPE_ARTIST",
-					) {
-						songOrVideo.ArtistChannelId = browseEndpoint.BrowseID
-					}
-				}
-			}
-
-			otherInfo, _ := strings.CutSuffix(otherInfoBuilder.String(), separator)
-			songOrVideo.OtherInfo = otherInfo
-
-			resultContent.SongOrVideos = append(resultContent.SongOrVideos, songOrVideo)
-		}
+		resultContent.SongOrVideos = parseSongOrVideoContents(shelfContents)
 
 	case search.ARTIST_SEARCH_KEY:
+		otherInfoBuilder := strings.Builder{}
+
 		for _, content := range shelfContents {
 			artist := search.Artist{}
-			var otherInfoBuilder strings.Builder
 
 			for i, flexColumn := range content.MusicResponsiveListItemRenderer.FlexColumns {
 				if i == 0 {
@@ -74,63 +36,90 @@ func ParseSearchContent(category search.SearchCategory, shelfContents []search.R
 			browseEndpoint := content.MusicResponsiveListItemRenderer.
 				NavigationEndpoint.BrowseEndpoint
 
-			if strings.Contains(
-				browseEndpoint.BrowseEndpointContextSupportedConfigs.
-					BrowseEndpointContextMusicConfig.PageType,
-				"MUSIC_PAGE_TYPE_ARTIST",
-			) {
+			if browseEndpoint.
+				BrowseEndpointContextSupportedConfigs.
+				BrowseEndpointContextMusicConfig.
+				PageType == "MUSIC_PAGE_TYPE_ARTIST" {
 				artist.ArtistChannelId = browseEndpoint.BrowseID
 			}
 
 			resultContent.Artists = append(resultContent.Artists, artist)
+			otherInfoBuilder.Reset()
 		}
 
 	case search.ALBUM_SEARCH_KEY:
+		otherInfoBuilder := strings.Builder{}
+
 		for _, content := range shelfContents {
 			album := search.Album{}
-			var otherInfoBuilder strings.Builder
 
 			for i, flexColumn := range content.MusicResponsiveListItemRenderer.FlexColumns {
 				if i == 0 {
 					album.Name = ParseYtTextField(ParseYtTextParams{
 						FlexColumnRuns: flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs,
 					})
-				} else {
-					otherInfoBuilder.WriteString(ParseYtTextField(ParseYtTextParams{
-						FlexColumnRuns: flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs,
-					}))
+					continue
+				}
+
+				otherInfoBuilder.WriteString(ParseYtTextField(ParseYtTextParams{
+					FlexColumnRuns: flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs,
+				}))
+
+				channelBrowseEndpoint := flexColumn.MusicResponsiveListItemFlexColumnRenderer.
+					Text.Runs[2].NavigationEndpoint.BrowseEndpoint
+
+				if channelBrowseEndpoint.
+					BrowseEndpointContextSupportedConfigs.
+					BrowseEndpointContextMusicConfig.
+					PageType == "MUSIC_PAGE_TYPE_ARTIST" {
+					album.ArtistChannelId = channelBrowseEndpoint.BrowseID
 				}
 			}
 
 			album.OtherInfo = otherInfoBuilder.String()
 			resultContent.Albums = append(resultContent.Albums, album)
+			otherInfoBuilder.Reset()
 		}
 
 	case search.COMMUNITY_PLAYLIST_SEARCH_KEY:
+		otherInfoBuilder := strings.Builder{}
+
 		for _, content := range shelfContents {
 			communityPlaylist := search.CommunityPlaylist{}
-			var otherInfoBuilder strings.Builder
 
 			for i, flexColumn := range content.MusicResponsiveListItemRenderer.FlexColumns {
 				if i == 0 {
 					communityPlaylist.Name = ParseYtTextField(ParseYtTextParams{
 						FlexColumnRuns: flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs,
 					})
-				} else {
-					otherInfoBuilder.WriteString(ParseYtTextField(ParseYtTextParams{
-						FlexColumnRuns: flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs,
-					}))
+					continue
 				}
+
+				otherInfoBuilder.WriteString(ParseYtTextField(ParseYtTextParams{
+					FlexColumnRuns: flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs,
+				}))
+			}
+
+			playlistBrowseEndpoint := content.MusicResponsiveListItemRenderer.
+				NavigationEndpoint.BrowseEndpoint
+
+			if playlistBrowseEndpoint.
+				BrowseEndpointContextSupportedConfigs.
+				BrowseEndpointContextMusicConfig.
+				PageType == "MUSIC_PAGE_TYPE_PLAYLIST" {
+				communityPlaylist.PlaylistId = playlistBrowseEndpoint.BrowseID
 			}
 
 			communityPlaylist.OtherInfo = otherInfoBuilder.String()
 			resultContent.CommunityPlaylists = append(resultContent.CommunityPlaylists, communityPlaylist)
+			otherInfoBuilder.Reset()
 		}
 
 	case search.FEATURED_PLAYLIST_SEARCH_KEY:
+		otherInfoBuilder := strings.Builder{}
+
 		for _, content := range shelfContents {
 			featuredPlaylist := search.FeaturedPlaylist{}
-			var otherInfoBuilder strings.Builder
 
 			for i, flexColumn := range content.MusicResponsiveListItemRenderer.FlexColumns {
 				if i == 0 {
@@ -146,8 +135,67 @@ func ParseSearchContent(category search.SearchCategory, shelfContents []search.R
 
 			featuredPlaylist.OtherInfo = otherInfoBuilder.String()
 			resultContent.FeaturedPlaylists = append(resultContent.FeaturedPlaylists, featuredPlaylist)
+			otherInfoBuilder.Reset()
 		}
+	default:
+		return resultContent
 	}
 
 	return resultContent
+}
+
+func parseSongOrVideoContents(shelfContents []search.RespSectionContent) []search.SongOrVideo {
+	songOrVideos := make([]search.SongOrVideo, 0, len(shelfContents))
+	otherInfoBuilder := strings.Builder{}
+
+	for _, content := range shelfContents {
+		songOrVideo := search.SongOrVideo{
+			VideoId: content.MusicResponsiveListItemRenderer.PlaylistItemData.VideoId,
+		}
+
+		for i, flexColumn := range content.MusicResponsiveListItemRenderer.FlexColumns {
+			if i == 0 {
+				songOrVideo.Name = ParseYtTextField(ParseYtTextParams{
+					FlexColumnRuns: flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs,
+				})
+				continue
+			}
+
+			otherInfoBuilder.WriteString(
+				ParseYtTextField(ParseYtTextParams{
+					FlexColumnRuns: flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs,
+				}) + OTHER_INFO_SEPARATOR,
+			)
+
+			if i == 1 {
+				channelBrowseEndpoint := flexColumn.MusicResponsiveListItemFlexColumnRenderer.
+					Text.Runs[0].NavigationEndpoint.BrowseEndpoint
+
+				if channelBrowseEndpoint.
+					BrowseEndpointContextSupportedConfigs.
+					BrowseEndpointContextMusicConfig.
+					PageType == "MUSIC_PAGE_TYPE_ARTIST" {
+					songOrVideo.ArtistChannelId = channelBrowseEndpoint.BrowseID
+				}
+
+				albumBrowseEndpoint := flexColumn.MusicResponsiveListItemFlexColumnRenderer.
+					Text.Runs[2].NavigationEndpoint.BrowseEndpoint
+
+				if albumBrowseEndpoint.
+					BrowseEndpointContextSupportedConfigs.
+					BrowseEndpointContextMusicConfig.
+					PageType == "MUSIC_PAGE_TYPE_ALBUM" {
+					songOrVideo.PlaylistId = albumBrowseEndpoint.BrowseID
+				}
+			}
+		}
+
+		otherInfo, _ := strings.CutSuffix(otherInfoBuilder.String(), OTHER_INFO_SEPARATOR)
+		songOrVideo.OtherInfo = otherInfo
+
+		songOrVideos = append(songOrVideos, songOrVideo)
+		otherInfoBuilder.Reset()
+	}
+
+	return songOrVideos
 }
