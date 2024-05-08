@@ -149,7 +149,7 @@ func parseSongOrVideoContents(shelfContents []search.RespSectionContent) []searc
 
 	for _, content := range shelfContents {
 		songOrVideo := search.SongOrVideo{
-			SongOrVideoId: content.MusicResponsiveListItemRenderer.PlaylistItemData.VideoId,
+			Id: content.MusicResponsiveListItemRenderer.PlaylistItemData.VideoId,
 		}
 
 		for i, flexColumn := range content.MusicResponsiveListItemRenderer.FlexColumns {
