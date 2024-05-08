@@ -11,6 +11,13 @@ const (
 )
 
 const (
+	MUSIC_PAGE_TYPE_ARTIST       string = "MUSIC_PAGE_TYPE_ARTIST"
+	MUSIC_PAGE_TYPE_ALBUM        string = "MUSIC_PAGE_TYPE_ALBUM"
+	MUSIC_PAGE_TYPE_USER_CHANNEL string = "MUSIC_PAGE_TYPE_USER_CHANNEL"
+	MUSIC_PAGE_TYPE_PLAYLIST     string = "MUSIC_PAGE_TYPE_PLAYLIST"
+)
+
+const (
 	USER_AGENT_HEADER string = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
 )
 
