@@ -17,11 +17,14 @@ type ResultContent struct {
 }
 
 type SongOrVideo struct {
-	VideoId         string `json:"videoId"`
+	SongOrVideoId   string `json:"songOrVideoId"`
 	Name            string `json:"name"`
-	OtherInfo       string `json:"otherInfo"`
+	AlbumName       string `json:"albumName"`
+	AlbumId         string `json:"albumId"`
+	ArtistName      string `json:"artistName"`
 	ArtistChannelId string `json:"artistChannelId"`
-	PlaylistId      string `json:"playlistId"`
+	Duration        string `json:"runtime"`
+	PlaysCount      string `json:"playsCount"`
 }
 
 type Artist struct {
@@ -31,13 +34,15 @@ type Artist struct {
 }
 
 type Album struct {
-	Name      string `json:"name"`
-	OtherInfo string `json:"otherInfo"`
+	Name            string `json:"name"`
+	OtherInfo       string `json:"otherInfo"`
+	ArtistChannelId string `json:"artistChannelId"`
 }
 
 type CommunityPlaylist struct {
-	Name      string `json:"name"`
-	OtherInfo string `json:"otherInfo"`
+	Name       string `json:"name"`
+	OtherInfo  string `json:"otherInfo"`
+	PlaylistId string `json:"playlistId"`
 }
 
 type FeaturedPlaylist struct {
