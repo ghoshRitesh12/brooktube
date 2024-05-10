@@ -7,11 +7,11 @@ import (
 	"github.com/ghoshRitesh12/brooktube/utils"
 )
 
-func FetchSearchResults(query string, category search.SearchCategory, continuationToken string) (search.RespResult, error) {
+func FetchSearchResults(query string, category search.SearchCategory, continuationToken string) (search.APIResp, error) {
 	method := "POST"
 	reqURL, err := url.Parse(utils.HOST + utils.SEARCH_PATH)
 	if err != nil {
-		return search.RespResult{}, err
+		return search.APIResp{}, err
 	}
 
 	body := map[string]any{}
@@ -39,7 +39,7 @@ func FetchSearchResults(query string, category search.SearchCategory, continuati
 		"X-Youtube-Client-Version": utils.CLIENT_VERSION,
 	}
 
-	data, err := fetch[search.RespResult](method, reqURL.String(), body, headers)
+	data, err := fetch[search.APIResp](method, reqURL.String(), body, headers)
 	if err != nil {
 		return data, err
 	}
