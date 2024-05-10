@@ -1,6 +1,6 @@
 package search
 
-type ScrapedResult struct {
+type ScrapedData struct {
 	Title string `json:"title"`
 	// for community playlists, songs, albums, videos, etc.
 	Content ResultContent `json:"content,omitempty"`
