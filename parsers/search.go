@@ -11,8 +11,8 @@ type SearchParserParams struct {
 	ContinuationToken string                // token used for fetching paginated data
 }
 
-func (p *YtMusicParser) GetSearchResults(query string, params SearchParserParams) (search.Result, error) {
-	result := search.Result{}
+func (p *YtMusicParser) GetSearchResults(query string, params SearchParserParams) (search.ScrapedResult, error) {
+	result := search.ScrapedResult{}
 
 	if _, ok := search.SEARCH_PARAMS_KEYS[params.Category]; !ok || params.Category == "" {
 		params.Category = search.SONG_SEARCH_KEY
