@@ -1,113 +1,55 @@
 package search
 
-type RespResult struct {
-	Contents struct {
-		TabbedSearchResultsRenderer struct {
-			Tabs []struct {
-				TabRenderer struct {
-					Content struct {
-						SectionListRenderer struct {
-							// for normal search results
-							Contents []RespResultSection `json:"contents"`
-						} `json:"sectionListRenderer"`
-					} `json:"content"`
-				} `json:"tabRenderer"`
-			} `json:"tabs"`
-		} `json:"tabbedSearchResultsRenderer"`
-	} `json:"contents,omitempty"`
-
-	// for paginated search results
-	ContinuationContents RespResultSectionContinuation `json:"continuationContents,omitempty"`
-}
-
-// for normal search results
-type RespResultSection struct {
+type ScrapedResult struct {
+	Title string `json:"title"`
 	// for community playlists, songs, albums, videos, etc.
-	MusicShelfRenderer struct {
-		Title struct {
-			Runs []struct {
-				Text string
-			} `json:"runs"`
-		} `json:"title"`
-
-		Contents      []RespSectionContent `json:"contents"`
-		Continuations []RespContinuation   `json:"continuations,omitempty"`
-	} `json:"musicShelfRenderer,omitempty"`
+	Content ResultContent `json:"content,omitempty"`
+	// used as ctoken and continuation query params for getting paginated data
+	ContinuationToken string `json:"continuation,omitempty"`
 }
 
-// for paginated search results
-type RespResultSectionContinuation struct {
-	// for community playlists, songs, albums, videos, etc.
-	MusicShelfContinuation struct {
-		Contents      []RespSectionContent `json:"contents"`
-		Continuations []RespContinuation   `json:"continuations,omitempty"`
-	} `json:"musicShelfContinuation,omitempty"`
+type ResultContent struct {
+	SongOrVideos       []SongOrVideo       `json:"songOrVideos"`
+	Artists            []Artist            `json:"artists"`
+	Albums             []Album             `json:"albums"`
+	CommunityPlaylists []CommunityPlaylist `json:"communityPlaylists"`
+	FeaturedPlaylists  []FeaturedPlaylist  `json:"featuredPlaylists"`
 }
 
-type RespSectionContent struct {
-	MusicResponsiveListItemRenderer struct {
-		FlexColumns []RespFlexColumns `json:"flexColumns"`
-
-		Menu struct {
-			MenuRenderer struct {
-				Items []struct {
-					MenuNavigationItemRenderer struct {
-						Text struct {
-							Runs []struct {
-								Text string
-							} `json:"runs"`
-						} `json:"text"`
-
-						NavigationEndpoint struct {
-							WatchPlaylistEndpoint struct {
-								PlaylistID string `json:"playlistId"`
-								Params     string `json:"params"`
-							} `json:"watchPlaylistEndpoint"`
-						} `json:"navigationEndpoint"`
-					} `json:"menuNavigationItemRenderer,omitempty"`
-				} `json:"items"`
-			} `json:"menuRenderer"`
-		} `json:"menu"`
-
-		PlaylistItemData struct {
-			VideoId string `json:"videoId"`
-		} `json:"playlistItemData,omitempty"`
-
-		NavigationEndpoint RespNavigationEndpoint `json:"navigationEndpoint,omitempty"`
-	} `json:"musicResponsiveListItemRenderer"`
+type SongOrVideo struct {
+	Id              string `json:"id"`
+	Name            string `json:"name"`
+	AlbumName       string `json:"albumName"`
+	AlbumId         string `json:"albumId"`
+	ArtistName      string `json:"artistName"`
+	ArtistChannelId string `json:"artistChannelId"`
+	Duration        string `json:"duration"`
+	Interactions    string `json:"interactions"`
 }
 
-type RespFlexColumns struct {
-	MusicResponsiveListItemFlexColumnRenderer struct {
-		Text struct {
-			Runs []RespFlexColumnRun
-		} `json:"text"`
-	} `json:"musicResponsiveListItemFlexColumnRenderer"`
+type Artist struct {
+	Name        string `json:"name"`
+	Subscribers string `json:"subscribers"`
+	ChannelId   string `json:"channelId"`
 }
 
-type RespContinuation struct {
-	NextContinuationData struct {
-		Continuation string `json:"continuation"`
-	} `json:"nextContinuationData"`
+type Album struct {
+	Name            string `json:"name"`
+	OtherInfo       string `json:"otherInfo"`
+	ArtistName      string `json:"artistName"`
+	ArtistChannelId string `json:"artistChannelId"`
+	YearOfRelease   string `json:"yearOfRelease"`
 }
 
-type RespFlexColumnRun struct {
-	Text               string
-	NavigationEndpoint RespNavigationEndpoint `json:"navigationEndpoint,omitempty"`
+type CommunityPlaylist struct {
+	Name            string `json:"name"`
+	OtherInfo       string `json:"otherInfo"`
+	PlaylistId      string `json:"playlistId"`
+	ArtistChannelId string `json:"artistChannelId"`
+	Interactions    string `json:"interactions"`
 }
 
-type RespNavigationEndpoint struct {
-	WatchEndpoint struct {
-		VideoID string `json:"videoId,omitempty"`
-	} `json:"watchEndpoint,omitempty"`
-
-	BrowseEndpoint struct {
-		BrowseID string `json:"browseId,omitempty"`
-
-		BrowseEndpointContextSupportedConfigs struct {
-			BrowseEndpointContextMusicConfig struct {
-				PageType string `json:"pageType,omitempty"`
-			} `json:"browseEndpointContextMusicConfig,omitempty"`
-		} `json:"browseEndpointContextSupportedConfigs,omitempty"`
-	} `json:"browseEndpoint,omitempty"`
+type FeaturedPlaylist struct {
+	Name      string `json:"name"`
+	OtherInfo string `json:"otherInfo"`
 }
