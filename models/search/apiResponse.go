@@ -1,6 +1,6 @@
 package search
 
-type RespResult struct {
+type APIResp struct {
 	Contents struct {
 		TabbedSearchResultsRenderer struct {
 			Tabs []struct {
@@ -8,7 +8,7 @@ type RespResult struct {
 					Content struct {
 						SectionListRenderer struct {
 							// for normal search results
-							Contents []RespResultSection `json:"contents"`
+							Contents []apiRespSection `json:"contents"`
 						} `json:"sectionListRenderer"`
 					} `json:"content"`
 				} `json:"tabRenderer"`
@@ -17,11 +17,11 @@ type RespResult struct {
 	} `json:"contents,omitempty"`
 
 	// for paginated search results
-	ContinuationContents RespResultSectionContinuation `json:"continuationContents,omitempty"`
+	ContinuationContents apiRespSectionContinuation `json:"continuationContents,omitempty"`
 }
 
 // for normal search results
-type RespResultSection struct {
+type apiRespSection struct {
 	// for community playlists, songs, albums, videos, etc.
 	MusicShelfRenderer struct {
 		Title struct {
@@ -30,23 +30,23 @@ type RespResultSection struct {
 			} `json:"runs"`
 		} `json:"title"`
 
-		Contents      []RespSectionContent `json:"contents"`
-		Continuations []RespContinuation   `json:"continuations,omitempty"`
+		Contents      []APIRespSectionContent `json:"contents"`
+		Continuations []APIRespContinuation   `json:"continuations,omitempty"`
 	} `json:"musicShelfRenderer,omitempty"`
 }
 
 // for paginated search results
-type RespResultSectionContinuation struct {
+type apiRespSectionContinuation struct {
 	// for community playlists, songs, albums, videos, etc.
 	MusicShelfContinuation struct {
-		Contents      []RespSectionContent `json:"contents"`
-		Continuations []RespContinuation   `json:"continuations,omitempty"`
+		Contents      []APIRespSectionContent `json:"contents"`
+		Continuations []APIRespContinuation   `json:"continuations,omitempty"`
 	} `json:"musicShelfContinuation,omitempty"`
 }
 
-type RespSectionContent struct {
+type APIRespSectionContent struct {
 	MusicResponsiveListItemRenderer struct {
-		FlexColumns []RespFlexColumns `json:"flexColumns"`
+		FlexColumns []apiRespFlexColumns `json:"flexColumns"`
 
 		Menu struct {
 			MenuRenderer struct {
@@ -73,30 +73,30 @@ type RespSectionContent struct {
 			VideoId string `json:"videoId"`
 		} `json:"playlistItemData,omitempty"`
 
-		NavigationEndpoint RespNavigationEndpoint `json:"navigationEndpoint,omitempty"`
+		NavigationEndpoint apiRespNavigationEndpoint `json:"navigationEndpoint,omitempty"`
 	} `json:"musicResponsiveListItemRenderer"`
 }
 
-type RespFlexColumns struct {
+type apiRespFlexColumns struct {
 	MusicResponsiveListItemFlexColumnRenderer struct {
 		Text struct {
-			Runs []RespFlexColumnRun
+			Runs []APIRespFlexColumnRun
 		} `json:"text"`
 	} `json:"musicResponsiveListItemFlexColumnRenderer"`
 }
 
-type RespContinuation struct {
+type APIRespContinuation struct {
 	NextContinuationData struct {
 		Continuation string `json:"continuation"`
 	} `json:"nextContinuationData"`
 }
 
-type RespFlexColumnRun struct {
+type APIRespFlexColumnRun struct {
 	Text               string
-	NavigationEndpoint RespNavigationEndpoint `json:"navigationEndpoint,omitempty"`
+	NavigationEndpoint apiRespNavigationEndpoint `json:"navigationEndpoint,omitempty"`
 }
 
-type RespNavigationEndpoint struct {
+type apiRespNavigationEndpoint struct {
 	WatchEndpoint struct {
 		VideoID string `json:"videoId,omitempty"`
 	} `json:"watchEndpoint,omitempty"`
