@@ -1,13 +1,9 @@
 package brooktube
 
 import (
-	"fmt"
-
-	"github.com/ghoshRitesh12/brooktube/parsers"
+	parser "github.com/ghoshRitesh12/brooktube/parsers"
 )
 
-func NewParser() *parsers.YtMusicParser {
-	fmt.Println("hello yt")
-
-	return parsers.New()
+func NewParser() *parser.YtMusicParser {
+	return parser.New()
 }
