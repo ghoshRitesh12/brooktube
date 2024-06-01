@@ -18,9 +18,13 @@ func fetch[T any](method string, reqUrl string, reqBody map[string]any, reqHeade
 	}
 
 	for key, val := range reqBody {
-		if val.(string) == "" {
-			continue
+		switch val.(type) {
+		case string:
+			if val == "" {
+				continue
+			}
 		}
+
 		payload[key] = val
 	}
 
