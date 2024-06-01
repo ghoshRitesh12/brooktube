@@ -6,7 +6,7 @@ import (
 	"github.com/ghoshRitesh12/brooktube/models/search"
 )
 
-func ParseSearchContent(category search.SearchCategory, shelfContents []search.RespSectionContent) search.ResultContent {
+func ParseSearchContent(category search.SearchCategory, shelfContents []search.APIRespSectionContent) search.ResultContent {
 	resultContent := search.ResultContent{}
 
 	switch category {
@@ -152,12 +152,12 @@ func ParseSearchContent(category search.SearchCategory, shelfContents []search.R
 	return resultContent
 }
 
-func parseSongOrVideoContents(shelfContents []search.RespSectionContent, category search.SearchCategory) []search.SongOrVideo {
+func parseSongOrVideoContents(shelfContents []search.APIRespSectionContent, category search.SearchCategory) []search.SongOrVideo {
 	songOrVideos := make([]search.SongOrVideo, 0, len(shelfContents))
 
 	for _, content := range shelfContents {
 		songOrVideo := search.SongOrVideo{
-			Id: content.MusicResponsiveListItemRenderer.PlaylistItemData.VideoId,
+			SongOrVideoId: content.MusicResponsiveListItemRenderer.PlaylistItemData.VideoId,
 		}
 
 		for i, flexColumn := range content.MusicResponsiveListItemRenderer.FlexColumns {
