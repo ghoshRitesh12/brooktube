@@ -7,7 +7,7 @@ import (
 )
 
 type ParseYtTextParams struct {
-	FlexColumnRuns []search.RespFlexColumnRun
+	FlexColumnRuns []search.APIRespFlexColumnRun
 	NormalRuns     []struct {
 		Text string
 	}
@@ -20,10 +20,14 @@ func ParseYtTextField(params ParseYtTextParams) string {
 		for _, val := range params.NormalRuns {
 			str.WriteString(val.Text)
 		}
-	} else if len(params.FlexColumnRuns) > 0 {
+		return str.String()
+	}
+
+	if len(params.FlexColumnRuns) > 0 {
 		for _, val := range params.FlexColumnRuns {
 			str.WriteString(val.Text)
 		}
+		return str.String()
 	}
 
 	return str.String()
