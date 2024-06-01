@@ -14,13 +14,14 @@ type browseEndpointContextMusicConfig struct {
 	PageType string `json:"pageType"`
 }
 
-func NewBrowserEndpointContext(pageType, browseId string) *BrowserEndpointContext {
-	return &BrowserEndpointContext{
-		BrowseEndpointContextSupportedConfigs: browseEndpointContextConfigs{
-			BrowseEndpointContextMusicConfig: browseEndpointContextMusicConfig{
-				PageType: "MUSIC_PAGE_TYPE_" + pageType,
+// func NewBrowserEndpointContext(musicPageType, browseId string) *BrowserEndpointContext {
+func NewBrowserEndpointContext(musicPageType, browseId string) map[string]any {
+	return map[string]any{
+		"browseEndpointContextSupportedConfigs": map[string]any{
+			"browseEndpointContextMusicConfig": map[string]string{
+				"pageType": musicPageType,
 			},
 		},
-		BrowseId: browseId,
+		"browseId": browseId,
 	}
 }
