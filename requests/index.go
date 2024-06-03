@@ -9,6 +9,14 @@ import (
 	"github.com/ghoshRitesh12/brooktube/utils"
 )
 
+var defaultHeaders = map[string]string{
+	"Accept":       "*/*",
+	"Origin":       utils.HOST,
+	"Referer":      utils.HOST + "/",
+	"Content-Type": "application/json",
+	"User-Agent":   utils.USER_AGENT_HEADER,
+}
+
 func fetch[T any](method string, reqUrl string, reqBody map[string]any, reqHeaders map[string]string) (T, error) {
 	var respBody T
 
@@ -38,11 +46,10 @@ func fetch[T any](method string, reqUrl string, reqBody map[string]any, reqHeade
 		return respBody, err
 	}
 
-	req.Header.Set("Accept", "*/*")
-	req.Header.Set("Origin", utils.HOST)
-	req.Header.Set("Referer", utils.HOST+"/")
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("User-Agent", utils.USER_AGENT_HEADER)
+	// setting default headers
+	for key, value := range defaultHeaders {
+		req.Header.Set(key, value)
+	}
 
 	queryParams := req.URL.Query()
 	queryParams.Set("key", utils.GOOG_API_KEY)
