@@ -38,4 +38,7 @@ const (
 	// GOOG_API_KEY_2    string = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8"
 )
 
-const OTHER_INFO_SEPARATOR string = " • "
+const (
+	OTHER_INFO_SEPARATOR string = " • "
+	EXPLICIT_ICON        string = "🅴"
+)
