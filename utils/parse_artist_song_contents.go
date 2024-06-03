@@ -24,6 +24,17 @@ func ParseArtistSongContents(shelfContents *[]search.APIRespSectionContent) []se
 			case 1:
 				songOrVideo.ArtistName = textRuns[0].Text
 
+				artistEndpoint := flexColumn.
+					MusicResponsiveListItemFlexColumnRenderer.
+					Text.Runs[0].NavigationEndpoint.BrowseEndpoint
+
+				if artistEndpoint.
+					BrowseEndpointContextSupportedConfigs.
+					BrowseEndpointContextMusicConfig.
+					PageType == MUSIC_PAGE_TYPE_ARTIST {
+					songOrVideo.ArtistChannelId = artistEndpoint.BrowseID
+				}
+
 			case 2:
 				songOrVideo.Interactions = textRuns[0].Text
 
