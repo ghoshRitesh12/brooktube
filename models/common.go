@@ -48,12 +48,12 @@ func (runs *NavigationEndpointRuns) GetTextField() string {
 	return str.String()
 }
 
-func (runs *NavigationEndpointRuns) GetFirstNavData() (pageType, browseId string) {
-	if len((*runs)) == 0 {
+func (runs *NavigationEndpointRuns) GetNavData(index uint8) (pageType, browseId string) {
+	if len((*runs)) == 0 || int(index) >= len((*runs)) {
 		return
 	}
 
-	run := (*runs)[0]
+	run := (*runs)[index]
 	browseId = run.NavigationEndpoint.BrowseEndpoint.BrowseID
 	pageType = run.NavigationEndpoint.BrowseEndpoint.BrowseEndpointContextSupportedConfigs.BrowseEndpointContextMusicConfig.PageType
 	return
@@ -90,12 +90,12 @@ func (runs *NavigationEndpointParamsRuns) GetTextField() string {
 	return str.String()
 }
 
-func (runs *NavigationEndpointParamsRuns) GetFirstNavData() (pageType, browseId, browseParams string) {
-	if len((*runs)) == 0 {
+func (runs *NavigationEndpointParamsRuns) GetNavData(index uint8) (pageType, browseId, browseParams string) {
+	if len((*runs)) == 0 || int(index) >= len((*runs)) {
 		return
 	}
 
-	run := (*runs)[0]
+	run := (*runs)[index]
 	browseId = run.NavigationEndpoint.BrowseEndpoint.BrowseID
 	pageType = run.NavigationEndpoint.BrowseEndpoint.BrowseEndpointContextSupportedConfigs.BrowseEndpointContextMusicConfig.PageType
 	browseParams = run.NavigationEndpoint.BrowseEndpoint.Params
