@@ -33,7 +33,10 @@ func fetch[T any](method string, reqUrl string, reqBody map[string]any, reqHeade
 		return respBody, err
 	}
 
-	req, _ := http.NewRequest(method, reqUrl, bytes.NewBuffer(jsonPayload))
+	req, err := http.NewRequest(method, reqUrl, bytes.NewBuffer(jsonPayload))
+	if err != nil {
+		return respBody, err
+	}
 
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("Origin", utils.HOST)
