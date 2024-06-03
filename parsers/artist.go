@@ -7,8 +7,6 @@ import (
 	"github.com/ghoshRitesh12/brooktube/requests"
 )
 
-// const SCRAPE_OPERATIONS int = 6
-
 const SCRAPE_OPERATIONS int = 7
 
 func (p *YtMusicParser) GetArtist(artistChannelID string) (artist.ScrapedData, error) {
