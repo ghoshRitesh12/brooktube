@@ -61,7 +61,7 @@ func (songsSection *ArtistSongsSection) ScrapeAndSet(
 		return
 	}
 
-	_, browseId := section.Title.Runs.GetFirstNavData()
+	_, browseId := section.Title.Runs.GetNavData(0)
 	songsSection.SeeMorePlaylistId = browseId
 
 	// spew.Dump("Before parsing song contents", len(section.Contents))
@@ -95,7 +95,7 @@ func (albumsSection *ArtistAlbumsSection) ScrapeAndSet(
 
 	_, browseId, browseParams := section.MusicCarouselShelfRenderer.
 		Header.MusicCarouselShelfBasicHeaderRenderer.
-		Title.Runs.GetFirstNavData()
+		Title.Runs.GetNavData(0)
 	albumsSection.SeeMoreEndpoint.DiscographyId = browseId
 	albumsSection.SeeMoreEndpoint.Params = browseParams
 
@@ -142,7 +142,7 @@ func (singlesSection *ArtistSinglesSection) ScrapeAndSet(
 
 	_, browseId, browseParams := section.MusicCarouselShelfRenderer.
 		Header.MusicCarouselShelfBasicHeaderRenderer.
-		Title.Runs.GetFirstNavData()
+		Title.Runs.GetNavData(0)
 	singlesSection.SeeMoreEndpoint.DiscographyId = browseId
 	singlesSection.SeeMoreEndpoint.Params = browseParams
 
@@ -185,7 +185,7 @@ func (videosSection *ArtistVideosSection) ScrapeAndSet(
 
 	_, browseId, _ := section.MusicCarouselShelfRenderer.
 		Header.MusicCarouselShelfBasicHeaderRenderer.
-		Title.Runs.GetFirstNavData()
+		Title.Runs.GetNavData(0)
 	videosSection.SeeMorePlaylistId = browseId
 
 	videosSection.Contents = make([]artistVideo, 0, len(section.MusicCarouselShelfRenderer.Contents))
