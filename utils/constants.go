@@ -3,6 +3,7 @@ package utils
 const (
 	HOST                    string = "https://music.youtube.com"
 	BROWSE_PATH             string = "/youtubei/v1/browse"
+	PLAYLIST_PATH           string = "/playlist?list="
 	PLAYER_PATH             string = "/youtubei/v1/player"
 	NEXT_PATH               string = "/youtubei/v1/next"
 	QUEUE_PATH              string = "/youtubei/v1/music/get_queue"
