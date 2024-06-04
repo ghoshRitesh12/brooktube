@@ -1,9 +1,10 @@
-package utils
+package helpers
 
 import (
 	"strings"
 
 	"github.com/ghoshRitesh12/brooktube/models/search"
+	"github.com/ghoshRitesh12/brooktube/utils"
 )
 
 func ParseSearchContent(category search.SearchCategory, shelfContents []search.APIRespSectionContent) search.ResultContent {
@@ -34,7 +35,7 @@ func ParseSearchContent(category search.SearchCategory, shelfContents []search.A
 			if browseEndpoint.
 				BrowseEndpointContextSupportedConfigs.
 				BrowseEndpointContextMusicConfig.
-				PageType == MUSIC_PAGE_TYPE_ARTIST {
+				PageType == utils.MUSIC_PAGE_TYPE_ARTIST {
 				artist.ChannelId = browseEndpoint.BrowseID
 			}
 
@@ -67,7 +68,7 @@ func ParseSearchContent(category search.SearchCategory, shelfContents []search.A
 				if channelBrowseEndpoint.
 					BrowseEndpointContextSupportedConfigs.
 					BrowseEndpointContextMusicConfig.
-					PageType == MUSIC_PAGE_TYPE_ARTIST {
+					PageType == utils.MUSIC_PAGE_TYPE_ARTIST {
 					album.ArtistChannelId = channelBrowseEndpoint.BrowseID
 				}
 
@@ -77,7 +78,7 @@ func ParseSearchContent(category search.SearchCategory, shelfContents []search.A
 			album.OtherInfo = otherInfoBuilder.String()
 			album.ArtistName = strings.Split(
 				album.OtherInfo,
-				OTHER_INFO_SEPARATOR,
+				utils.OTHER_INFO_SEPARATOR,
 			)[1]
 
 			resultContent.Albums = append(resultContent.Albums, album)
@@ -114,7 +115,7 @@ func ParseSearchContent(category search.SearchCategory, shelfContents []search.A
 			if playlistBrowseEndpoint.
 				BrowseEndpointContextSupportedConfigs.
 				BrowseEndpointContextMusicConfig.
-				PageType == MUSIC_PAGE_TYPE_PLAYLIST {
+				PageType == utils.MUSIC_PAGE_TYPE_PLAYLIST {
 				communityPlaylist.PlaylistId = playlistBrowseEndpoint.BrowseID
 			}
 
@@ -179,11 +180,11 @@ func parseSongOrVideoContents(shelfContents []search.APIRespSectionContent, cate
 				if (channelBrowseEndpoint.
 					BrowseEndpointContextSupportedConfigs.
 					BrowseEndpointContextMusicConfig.
-					PageType == MUSIC_PAGE_TYPE_ARTIST) ||
+					PageType == utils.MUSIC_PAGE_TYPE_ARTIST) ||
 					(channelBrowseEndpoint.
 						BrowseEndpointContextSupportedConfigs.
 						BrowseEndpointContextMusicConfig.
-						PageType == MUSIC_PAGE_TYPE_USER_CHANNEL) {
+						PageType == utils.MUSIC_PAGE_TYPE_USER_CHANNEL) {
 					songOrVideo.ArtistChannelId = channelBrowseEndpoint.BrowseID
 				}
 
@@ -197,7 +198,7 @@ func parseSongOrVideoContents(shelfContents []search.APIRespSectionContent, cate
 				if albumBrowseEndpoint.
 					BrowseEndpointContextSupportedConfigs.
 					BrowseEndpointContextMusicConfig.
-					PageType == MUSIC_PAGE_TYPE_ALBUM {
+					PageType == utils.MUSIC_PAGE_TYPE_ALBUM {
 					songOrVideo.AlbumId = albumBrowseEndpoint.BrowseID
 				}
 

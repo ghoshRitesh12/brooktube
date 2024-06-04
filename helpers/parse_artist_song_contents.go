@@ -1,7 +1,8 @@
-package utils
+package helpers
 
 import (
 	"github.com/ghoshRitesh12/brooktube/models/search"
+	"github.com/ghoshRitesh12/brooktube/utils"
 )
 
 func ParseArtistSongContents(shelfContents *[]search.APIRespSectionContent) []search.SongOrVideo {
@@ -31,7 +32,7 @@ func ParseArtistSongContents(shelfContents *[]search.APIRespSectionContent) []se
 				if artistEndpoint.
 					BrowseEndpointContextSupportedConfigs.
 					BrowseEndpointContextMusicConfig.
-					PageType == MUSIC_PAGE_TYPE_ARTIST {
+					PageType == utils.MUSIC_PAGE_TYPE_ARTIST {
 					songOrVideo.ArtistChannelId = artistEndpoint.BrowseID
 				}
 
@@ -46,7 +47,7 @@ func ParseArtistSongContents(shelfContents *[]search.APIRespSectionContent) []se
 				if albumBrowseEndpoint.
 					BrowseEndpointContextSupportedConfigs.
 					BrowseEndpointContextMusicConfig.
-					PageType == MUSIC_PAGE_TYPE_ALBUM {
+					PageType == utils.MUSIC_PAGE_TYPE_ALBUM {
 					songOrVideo.AlbumName = flexColumn.
 						MusicResponsiveListItemFlexColumnRenderer.
 						Text.Runs[0].Text

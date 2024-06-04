@@ -1,4 +1,4 @@
-package utils
+package helpers
 
 import (
 	"strings"
@@ -31,8 +31,4 @@ func ParseYtTextField(params ParseYtTextParams) string {
 	}
 
 	return str.String()
-}
-
-func GetWatchUrl(videoId string) string {
-	return HOST + "/watch?v=" + videoId
 }

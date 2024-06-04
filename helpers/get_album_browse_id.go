@@ -1,10 +1,12 @@
-package utils
+package helpers
 
 import (
 	"fmt"
 	"io"
 	"net/http"
 	"regexp"
+
+	"github.com/ghoshRitesh12/brooktube/utils"
 )
 
 /*
@@ -12,12 +14,12 @@ takes in album id that start with "OLAK5" and returns browse id
 that starts with "MPREb_"
 */
 func GetAlbumBrowseId(albumId string) (string, error) {
-	url := HOST + PLAYLIST_PATH + albumId
+	url := utils.HOST + utils.PLAYLIST_PATH + albumId
 	headers := map[string]string{
 		"Accept":                   "*/*",
-		"User-Agent":               USER_AGENT_HEADER,
-		"X-Goog-Visitor-Id":        GOOG_VISITOR_ID,
-		"X-Youtube-Client-Version": CLIENT_VERSION,
+		"User-Agent":               utils.USER_AGENT_HEADER,
+		"X-Goog-Visitor-Id":        utils.GOOG_VISITOR_ID,
+		"X-Youtube-Client-Version": utils.CLIENT_VERSION,
 	}
 
 	req, err := http.NewRequest("GET", url, nil)

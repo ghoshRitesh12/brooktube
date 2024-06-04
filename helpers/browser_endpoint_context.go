@@ -1,4 +1,4 @@
-package utils
+package helpers
 
 type BrowserEndpointContext struct {
 	BrowseEndpointContextSupportedConfigs browseEndpointContextConfigs `json:"browseEndpointContextSupportedConfigs"`
