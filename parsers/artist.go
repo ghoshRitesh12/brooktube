@@ -33,7 +33,7 @@ func (p *YTMusicAPI) GetArtist(artistChannelID string) (artist.ScrapedData, erro
 	for _, section := range *sections {
 		sectionName := section.MusicCarouselShelfRenderer.
 			Header.MusicCarouselShelfBasicHeaderRenderer.
-			Title.Runs.GetTextField()
+			Title.Runs.GetText()
 
 		switch sectionName {
 		case "Albums":
