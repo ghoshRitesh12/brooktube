@@ -11,8 +11,8 @@ type SearchParserParams struct {
 	ContinuationToken string                // token used for fetching paginated data
 }
 
-func (p *YTMusicAPI) GetSearchResults(query string, params SearchParserParams) (search.ScrapedData, error) {
-	result := search.ScrapedData{}
+func (p *YTMusicAPI) GetSearchResults(query string, params SearchParserParams) (*search.ScrapedData, error) {
+	result := &search.ScrapedData{}
 
 	if _, ok := search.SEARCH_PARAMS_KEYS[params.Category]; !ok || params.Category == "" {
 		params.Category = search.SONG_SEARCH_KEY
@@ -24,13 +24,12 @@ func (p *YTMusicAPI) GetSearchResults(query string, params SearchParserParams) (
 		params.ContinuationToken,
 	)
 	if err != nil {
-		return result, err
+		return nil, err
 	}
 
 	if params.ContinuationToken != "" {
 		section := data.ContinuationContents.MusicShelfContinuation
-
-		result.ContinuationToken = helpers.PickContinuationToken(section.Continuations)
+		result.ContinuationToken = section.Continuations.GetContinuationToken()
 		result.Content = helpers.ParseSearchContent(params.Category, section.Contents)
 
 		return result, nil
@@ -38,15 +37,14 @@ func (p *YTMusicAPI) GetSearchResults(query string, params SearchParserParams) (
 
 	sections := data.Contents.TabbedSearchResultsRenderer.
 		Tabs[0].TabRenderer.Content.SectionListRenderer.Contents
+
 	if len(sections) == 0 || len(sections) > 1 {
 		return result, nil
 	}
-	section := sections[0]
 
-	result.ContinuationToken = helpers.PickContinuationToken(section.MusicShelfRenderer.Continuations)
-	result.Title = helpers.ParseYtTextField(helpers.ParseYtTextParams{
-		NormalRuns: section.MusicShelfRenderer.Title.Runs,
-	})
+	section := sections[0]
+	result.Title = section.MusicShelfRenderer.Title.Runs.GetText()
+	result.ContinuationToken = section.MusicShelfRenderer.Continuations.GetContinuationToken()
 	result.Content = helpers.ParseSearchContent(params.Category, section.MusicShelfRenderer.Contents)
 
 	return result, nil
