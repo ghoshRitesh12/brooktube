@@ -9,9 +9,9 @@ import (
 
 func TestGetArtist(t *testing.T) {
 	const EMINEM_CHANNEL_ID = "UCedvOgsKFzcK3hA5taf3KoQ"
-	parser := brooktube.NewParser()
+	brooktube := brooktube.New()
 
-	artist, err := parser.GetArtist(EMINEM_CHANNEL_ID)
+	artist, err := brooktube.GetArtist(EMINEM_CHANNEL_ID)
 	if err != nil {
 		t.Error(err)
 	}

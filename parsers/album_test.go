@@ -9,9 +9,9 @@ import (
 
 func TestGetAlbum(t *testing.T) {
 	const KAMIMAZE_ALBUM_ID = "OLAK5uy_kRVaDLvDemKrwYjkdUTryKHIyQa_RiiPo"
-	parser := brooktube.NewParser()
+	brooktube := brooktube.New()
 
-	album, err := parser.GetAlbum(KAMIMAZE_ALBUM_ID)
+	album, err := brooktube.GetAlbum(KAMIMAZE_ALBUM_ID)
 	if err != nil {
 		t.Error(err)
 	}

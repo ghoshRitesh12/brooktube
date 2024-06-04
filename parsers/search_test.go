@@ -11,9 +11,9 @@ import (
 
 func TestSubGetSearchSongs(t *testing.T) {
 	t.Parallel()
-	parser := brooktube.NewParser()
+	brooktube := brooktube.New()
 
-	d, err := parser.GetSearchResults(
+	d, err := brooktube.GetSearchResults(
 		"black clover",
 		parsers.SearchParserParams{
 			Category: search.SONG_SEARCH_KEY,
@@ -33,9 +33,9 @@ func TestSubGetSearchSongs(t *testing.T) {
 
 func TestSubGetSearchVideos(t *testing.T) {
 	t.Parallel()
-	parser := brooktube.NewParser()
+	brooktube := brooktube.New()
 
-	d, err := parser.GetSearchResults(
+	d, err := brooktube.GetSearchResults(
 		"black clover",
 		parsers.SearchParserParams{
 			Category: search.VIDEO_SEARCH_KEY,
@@ -55,9 +55,9 @@ func TestSubGetSearchVideos(t *testing.T) {
 
 func TestSubGetSearchArtists(t *testing.T) {
 	t.Parallel()
-	parser := brooktube.NewParser()
+	brooktube := brooktube.New()
 
-	d, err := parser.GetSearchResults(
+	d, err := brooktube.GetSearchResults(
 		"black clover",
 		parsers.SearchParserParams{
 			Category: search.ARTIST_SEARCH_KEY,
@@ -77,9 +77,9 @@ func TestSubGetSearchArtists(t *testing.T) {
 
 func TestSubGetSearchAlbums(t *testing.T) {
 	t.Parallel()
-	parser := brooktube.NewParser()
+	brooktube := brooktube.New()
 
-	d, err := parser.GetSearchResults(
+	d, err := brooktube.GetSearchResults(
 		"black clover",
 		parsers.SearchParserParams{
 			Category: search.ALBUM_SEARCH_KEY,
@@ -99,9 +99,9 @@ func TestSubGetSearchAlbums(t *testing.T) {
 
 func TestSubGetSearchCommunityPlaylists(t *testing.T) {
 	t.Parallel()
-	parser := brooktube.NewParser()
+	brooktube := brooktube.New()
 
-	d, err := parser.GetSearchResults(
+	d, err := brooktube.GetSearchResults(
 		"black clover",
 		parsers.SearchParserParams{
 			Category: search.COMMUNITY_PLAYLIST_SEARCH_KEY,
