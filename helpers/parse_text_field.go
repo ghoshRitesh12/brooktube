@@ -3,11 +3,11 @@ package helpers
 import (
 	"strings"
 
-	"github.com/ghoshRitesh12/brooktube/models/search"
+	"github.com/ghoshRitesh12/brooktube/models"
 )
 
 type ParseYtTextParams struct {
-	FlexColumnRuns []search.APIRespFlexColumnRun
+	FlexColumnRuns models.NavigationAndWatchEndpointRuns
 	NormalRuns     []struct {
 		Text string
 	}
