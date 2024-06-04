@@ -1,5 +1,7 @@
 package search
 
+import "github.com/ghoshRitesh12/brooktube/models"
+
 type APIResp struct {
 	Contents struct {
 		TabbedSearchResultsRenderer struct {
@@ -25,13 +27,11 @@ type apiRespSection struct {
 	// for community playlists, songs, albums, videos, etc.
 	MusicShelfRenderer struct {
 		Title struct {
-			Runs []struct {
-				Text string
-			} `json:"runs"`
+			Runs models.BasicRuns `json:"runs"`
 		} `json:"title"`
 
 		Contents      []APIRespSectionContent `json:"contents"`
-		Continuations []APIRespContinuation   `json:"continuations,omitempty"`
+		Continuations models.Continuations    `json:"continuations,omitempty"`
 	} `json:"musicShelfRenderer,omitempty"`
 }
 
@@ -40,7 +40,7 @@ type apiRespSectionContinuation struct {
 	// for community playlists, songs, albums, videos, etc.
 	MusicShelfContinuation struct {
 		Contents      []APIRespSectionContent `json:"contents"`
-		Continuations []APIRespContinuation   `json:"continuations,omitempty"`
+		Continuations models.Continuations    `json:"continuations,omitempty"`
 	} `json:"musicShelfContinuation,omitempty"`
 }
 
@@ -80,7 +80,7 @@ type APIRespSectionContent struct {
 type apiRespFlexColumns struct {
 	MusicResponsiveListItemFlexColumnRenderer struct {
 		Text struct {
-			Runs []APIRespFlexColumnRun
+			Runs models.NavigationAndWatchEndpointRuns
 		} `json:"text"`
 	} `json:"musicResponsiveListItemFlexColumnRenderer"`
 }
@@ -89,11 +89,6 @@ type APIRespContinuation struct {
 	NextContinuationData struct {
 		Continuation string `json:"continuation"`
 	} `json:"nextContinuationData"`
-}
-
-type APIRespFlexColumnRun struct {
-	Text               string
-	NavigationEndpoint apiRespNavigationEndpoint `json:"navigationEndpoint,omitempty"`
 }
 
 type apiRespNavigationEndpoint struct {
