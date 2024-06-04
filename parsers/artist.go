@@ -9,13 +9,13 @@ import (
 
 const SCRAPE_OPERATIONS int = 7
 
-func (p *YTMusicAPI) GetArtist(artistChannelID string) (artist.ScrapedData, error) {
+func (p *YTMusicAPI) GetArtist(artistChannelID string) (*artist.ScrapedData, error) {
 	wg := &sync.WaitGroup{}
-	result := artist.ScrapedData{}
+	result := &artist.ScrapedData{}
 
 	data, err := requests.FetchArtist(artistChannelID)
 	if err != nil {
-		return result, err
+		return nil, err
 	}
 
 	sections := &data.Contents.SingleColumnBrowseResultsRenderer.
@@ -31,20 +31,22 @@ func (p *YTMusicAPI) GetArtist(artistChannelID string) (artist.ScrapedData, erro
 	go result.SongsSection.ScrapeAndSet(wg, sections)
 
 	for _, section := range *sections {
-		sectionName := section.MusicCarouselShelfRenderer.
-			Header.MusicCarouselShelfBasicHeaderRenderer.
-			Title.Runs.GetText()
+		sectionName := artist.SectionName(
+			section.MusicCarouselShelfRenderer.
+				Header.MusicCarouselShelfBasicHeaderRenderer.
+				Title.Runs.GetText(),
+		)
 
 		switch sectionName {
-		case "Albums":
+		case artist.SECTION_ALBUMS:
 			go result.AlbumsSection.ScrapeAndSet(wg, &section)
-		case "Singles":
+		case artist.SECTION_SINGLES:
 			go result.SinglesSection.ScrapeAndSet(wg, &section)
-		case "Videos":
+		case artist.SECTION_VIDEOS:
 			go result.VideosSection.ScrapeAndSet(wg, &section)
-		case "Featured on":
+		case artist.SECTION_FEATURED_ON:
 			go result.FeaturedOnSection.ScrapeAndSet(wg, &section)
-		case "Fans might also like":
+		case artist.SECTION_ALIKE_ARTISTS:
 			go result.AlikeArtistsSection.ScrapeAndSet(wg, &section)
 		default:
 			continue
