@@ -1,7 +1,7 @@
 package parsers
 
-type YtMusicParser struct{}
+type YTMusicAPI struct{}
 
-func New() *YtMusicParser {
-	return &YtMusicParser{}
+func New() *YTMusicAPI {
+	return &YTMusicAPI{}
 }
