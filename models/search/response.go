@@ -1,5 +1,11 @@
 package search
 
+import (
+	"strings"
+
+	"github.com/ghoshRitesh12/brooktube/utils"
+)
+
 type ScrapedData struct {
 	Title string `json:"title"`
 	// for community playlists, songs, albums, videos, etc.
@@ -9,47 +15,323 @@ type ScrapedData struct {
 }
 
 type ResultContent struct {
-	SongOrVideos       []SongOrVideo       `json:"songOrVideos"`
-	Artists            []Artist            `json:"artists"`
-	Albums             []Album             `json:"albums"`
-	CommunityPlaylists []CommunityPlaylist `json:"communityPlaylists"`
-	FeaturedPlaylists  []FeaturedPlaylist  `json:"featuredPlaylists"`
+	Songs              Songs              `json:"songs"`
+	Videos             Videos             `json:"videos"`
+	Artists            Artists            `json:"artists"`
+	Albums             Albums             `json:"albums"`
+	CommunityPlaylists CommunityPlaylists `json:"communityPlaylists"`
+	FeaturedPlaylists  FeaturedPlaylists  `json:"featuredPlaylists"`
 }
 
-type SongOrVideo struct {
-	SongOrVideoId   string `json:"songOrVideoId"`
-	Name            string `json:"name"`
-	AlbumName       string `json:"albumName"`
-	AlbumId         string `json:"albumId"`
-	ArtistName      string `json:"artistName"`
-	ArtistChannelId string `json:"artistChannelId"`
-	Duration        string `json:"duration"`
-	Interactions    string `json:"interactions"`
+type (
+	SongOrVideo struct {
+		SongOrVideoId   string `json:"songOrVideoId"`
+		Name            string `json:"name"`
+		AlbumName       string `json:"albumName"`
+		AlbumId         string `json:"albumId"`
+		ArtistName      string `json:"artistName"`
+		ArtistChannelId string `json:"artistChannelId"`
+		Duration        string `json:"duration"`
+		Interactions    string `json:"interactions"`
+	}
+	Songs []SongOrVideo
+)
+
+func (songs *Songs) ScrapeAndSet(
+	shelfContents []APIRespSectionContent,
+) {
+	preSongs := make(Songs, 0, len(shelfContents))
+	*songs = preSongs
+
+	for _, content := range shelfContents {
+		songOrVideo := SongOrVideo{
+			SongOrVideoId: content.MusicResponsiveListItemRenderer.PlaylistItemData.VideoId,
+		}
+
+		for i, flexColumn := range content.MusicResponsiveListItemRenderer.FlexColumns {
+			textRuns := flexColumn.
+				MusicResponsiveListItemFlexColumnRenderer.Text.Runs
+
+			if i == 0 {
+				songOrVideo.Name = textRuns.GetText(0)
+				continue
+			}
+
+			if i == 1 {
+				songOrVideo.ArtistName = textRuns.GetText(0)
+				songOrVideo.AlbumName = textRuns.GetText(2)
+
+				pageType, browseId, _ := flexColumn.
+					MusicResponsiveListItemFlexColumnRenderer.
+					Text.Runs.GetNavData(0)
+
+				if (pageType == utils.MUSIC_PAGE_TYPE_ARTIST) ||
+					(pageType == utils.MUSIC_PAGE_TYPE_USER_CHANNEL) {
+					songOrVideo.ArtistChannelId = browseId
+				}
+
+				{
+					pageType, browseId, _ := flexColumn.
+						MusicResponsiveListItemFlexColumnRenderer.
+						Text.Runs.GetNavData(2)
+
+					if pageType == utils.MUSIC_PAGE_TYPE_ALBUM {
+						songOrVideo.AlbumId = browseId
+					}
+				}
+
+				songOrVideo.Duration = textRuns.GetText(uint8(len(textRuns) - 1))
+				songOrVideo.Interactions = textRuns.GetText(2)
+
+				continue
+			}
+		}
+
+		*songs = append(*songs, songOrVideo)
+	}
 }
 
-type Artist struct {
-	Name        string `json:"name"`
-	Subscribers string `json:"subscribers"`
-	ChannelId   string `json:"channelId"`
+type Videos []SongOrVideo
+
+func (videos *Videos) ScrapeAndSet(
+	shelfContents []APIRespSectionContent,
+) {
+	preVideos := make(Videos, 0, len(shelfContents))
+	*videos = preVideos
+
+	for _, content := range shelfContents {
+		songOrVideo := SongOrVideo{
+			SongOrVideoId: content.MusicResponsiveListItemRenderer.PlaylistItemData.VideoId,
+		}
+
+		for i, flexColumn := range content.MusicResponsiveListItemRenderer.FlexColumns {
+			textRuns := flexColumn.
+				MusicResponsiveListItemFlexColumnRenderer.Text.Runs
+
+			if i == 0 {
+				songOrVideo.Name = textRuns.GetText(0)
+				continue
+			}
+
+			if i == 1 {
+				songOrVideo.ArtistName = textRuns.GetText(0)
+
+				pageType, browseId, _ := flexColumn.
+					MusicResponsiveListItemFlexColumnRenderer.
+					Text.Runs.GetNavData(0)
+
+				if (pageType == utils.MUSIC_PAGE_TYPE_ARTIST) ||
+					(pageType == utils.MUSIC_PAGE_TYPE_USER_CHANNEL) {
+					songOrVideo.ArtistChannelId = browseId
+				}
+
+				songOrVideo.Duration = textRuns.GetText(uint8(len(textRuns) - 1))
+				songOrVideo.Interactions = textRuns.GetText(2)
+
+				continue
+			}
+
+			songOrVideo.Interactions = textRuns.GetText(0)
+		}
+
+		*videos = append(*videos, songOrVideo)
+	}
 }
 
-type Album struct {
-	Name            string `json:"name"`
-	OtherInfo       string `json:"otherInfo"`
-	ArtistName      string `json:"artistName"`
-	ArtistChannelId string `json:"artistChannelId"`
-	YearOfRelease   string `json:"yearOfRelease"`
+type (
+	Artist struct {
+		Name        string `json:"name"`
+		Subscribers string `json:"subscribers"`
+		ChannelId   string `json:"channelId"`
+	}
+	Artists []Artist
+)
+
+func (artists *Artists) ScrapeAndSet(
+	shelfContents []APIRespSectionContent,
+) {
+	preArtists := make(Artists, 0, len(shelfContents))
+	*artists = preArtists
+
+	for _, content := range shelfContents {
+		artist := Artist{}
+
+		for i, flexColumn := range content.MusicResponsiveListItemRenderer.FlexColumns {
+			textRuns := flexColumn.
+				MusicResponsiveListItemFlexColumnRenderer.
+				Text.Runs
+
+			if i == 0 {
+				artist.Name = flexColumn.
+					MusicResponsiveListItemFlexColumnRenderer.
+					Text.Runs.GetText()
+				continue
+			}
+
+			artist.Subscribers = strings.Split(
+				textRuns.GetText(2),
+				" ",
+			)[0]
+		}
+
+		browseEndpoint := content.MusicResponsiveListItemRenderer.
+			NavigationEndpoint.BrowseEndpoint
+
+		if browseEndpoint.
+			BrowseEndpointContextSupportedConfigs.
+			BrowseEndpointContextMusicConfig.
+			PageType == utils.MUSIC_PAGE_TYPE_ARTIST {
+			artist.ChannelId = browseEndpoint.BrowseID
+		}
+
+		*artists = append(*artists, artist)
+	}
 }
 
-type CommunityPlaylist struct {
-	Name            string `json:"name"`
-	OtherInfo       string `json:"otherInfo"`
-	PlaylistId      string `json:"playlistId"`
-	ArtistChannelId string `json:"artistChannelId"`
-	Interactions    string `json:"interactions"`
+type (
+	Album struct {
+		Name            string `json:"name"`
+		OtherInfo       string `json:"otherInfo"`
+		ArtistName      string `json:"artistName"`
+		ArtistChannelId string `json:"artistChannelId"`
+		YearOfRelease   string `json:"yearOfRelease"`
+	}
+	Albums []Album
+)
+
+func (albums *Albums) ScrapeAndSet(
+	shelfContents []APIRespSectionContent,
+) {
+	preArtists := make(Albums, 0, len(shelfContents))
+	*albums = preArtists
+
+	otherInfoBuilder := strings.Builder{}
+
+	for _, content := range shelfContents {
+		album := Album{}
+
+		for i, flexColumn := range content.MusicResponsiveListItemRenderer.FlexColumns {
+			textRuns := flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs
+
+			if i == 0 {
+				album.Name = textRuns.GetText()
+				continue
+			}
+
+			otherInfoBuilder.WriteString(textRuns.GetText())
+
+			pageType, browseId, _ := flexColumn.
+				MusicResponsiveListItemFlexColumnRenderer.
+				Text.Runs.GetNavData(2)
+
+			if pageType == utils.MUSIC_PAGE_TYPE_ARTIST {
+				album.ArtistChannelId = browseId
+			}
+
+			album.YearOfRelease = textRuns.GetText(uint8(len(textRuns) - 1))
+		}
+
+		album.OtherInfo = otherInfoBuilder.String()
+		album.ArtistName = strings.Split(
+			album.OtherInfo,
+			utils.OTHER_INFO_SEPARATOR,
+		)[1]
+
+		*albums = append(*albums, album)
+		otherInfoBuilder.Reset()
+	}
 }
 
-type FeaturedPlaylist struct {
-	Name      string `json:"name"`
-	OtherInfo string `json:"otherInfo"`
+type (
+	CommunityPlaylist struct {
+		Name            string `json:"name"`
+		OtherInfo       string `json:"otherInfo"`
+		PlaylistId      string `json:"playlistId"`
+		ArtistChannelId string `json:"artistChannelId"`
+		Interactions    string `json:"interactions"`
+	}
+	CommunityPlaylists []CommunityPlaylist
+)
+
+func (communityPlaylists *CommunityPlaylists) ScrapeAndSet(
+	shelfContents []APIRespSectionContent,
+) {
+	preCommunityPlaylists := make(CommunityPlaylists, 0, len(shelfContents))
+	*communityPlaylists = preCommunityPlaylists
+
+	otherInfoBuilder := strings.Builder{}
+
+	for _, content := range shelfContents {
+		communityPlaylist := CommunityPlaylist{}
+
+		for i, flexColumn := range content.MusicResponsiveListItemRenderer.FlexColumns {
+			textRuns := flexColumn.
+				MusicResponsiveListItemFlexColumnRenderer.
+				Text.Runs
+
+			if i == 0 {
+				communityPlaylist.Name = textRuns.GetText()
+				continue
+			}
+
+			otherInfoBuilder.WriteString(textRuns.GetText())
+
+			_, browseId, _ := textRuns.GetNavData(0)
+			communityPlaylist.ArtistChannelId = browseId
+			communityPlaylist.Interactions = textRuns.GetText(uint8(len(textRuns) - 1))
+		}
+
+		playlistBrowseEndpoint := content.
+			MusicResponsiveListItemRenderer.
+			NavigationEndpoint.BrowseEndpoint
+
+		if playlistBrowseEndpoint.
+			BrowseEndpointContextSupportedConfigs.
+			BrowseEndpointContextMusicConfig.
+			PageType == utils.MUSIC_PAGE_TYPE_PLAYLIST {
+			communityPlaylist.PlaylistId = playlistBrowseEndpoint.BrowseID
+		}
+
+		communityPlaylist.OtherInfo = otherInfoBuilder.String()
+		*communityPlaylists = append(*communityPlaylists, communityPlaylist)
+		otherInfoBuilder.Reset()
+	}
+}
+
+type (
+	FeaturedPlaylist struct {
+		Name      string `json:"name"`
+		OtherInfo string `json:"otherInfo"`
+	}
+	FeaturedPlaylists []FeaturedPlaylist
+)
+
+func (featuredPlaylists *FeaturedPlaylists) ScrapeAndSet(
+	shelfContents []APIRespSectionContent,
+) {
+	preCommunityPlaylists := make(FeaturedPlaylists, 0, len(shelfContents))
+	*featuredPlaylists = preCommunityPlaylists
+
+	otherInfoBuilder := strings.Builder{}
+
+	for _, content := range shelfContents {
+		featuredPlaylist := FeaturedPlaylist{}
+
+		for i, flexColumn := range content.MusicResponsiveListItemRenderer.FlexColumns {
+			textRuns := flexColumn.
+				MusicResponsiveListItemFlexColumnRenderer.
+				Text.Runs
+
+			if i == 0 {
+				featuredPlaylist.Name = textRuns.GetText()
+				continue
+			}
+
+			otherInfoBuilder.WriteString(textRuns.GetText())
+		}
+
+		featuredPlaylist.OtherInfo = otherInfoBuilder.String()
+		*featuredPlaylists = append(*featuredPlaylists, featuredPlaylist)
+		otherInfoBuilder.Reset()
+	}
 }
