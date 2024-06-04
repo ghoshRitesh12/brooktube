@@ -20,7 +20,7 @@ func TestSubGetSearchSongs(t *testing.T) {
 		},
 	)
 
-	for _, song := range d.Content.SongOrVideos {
+	for _, song := range d.Content.Songs {
 		spew.Dump(song)
 	}
 
@@ -42,8 +42,8 @@ func TestSubGetSearchVideos(t *testing.T) {
 		},
 	)
 
-	for _, song := range d.Content.SongOrVideos {
-		spew.Dump(song)
+	for _, video := range d.Content.Videos {
+		spew.Dump(video)
 	}
 
 	spew.Dump(d.ContinuationToken)
