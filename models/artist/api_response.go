@@ -21,16 +21,20 @@ type APIResp struct {
 		} `json:"singleColumnBrowseResultsRenderer,omitempty"`
 	} `json:"contents,omitempty"`
 
+	// for meta data of the album
 	Header apiRespHeader `json:"header,omitempty"`
 }
 
 type apiRespSectionContent struct {
-	MusicShelfRenderer            apiRespMusicShelfRenderer         `json:"musicShelfRenderer,omitempty"`
-	MusicCarouselShelfRenderer    apiRespMusicCarouselShelfRenderer `json:"musicCarouselShelfRenderer,omitempty"`
-	MusicDescriptionShelfRenderer apiRespMusicDescriptionSection    `json:"musicDescriptionShelfRenderer,omitempty"`
+	// for songs
+	MusicShelfRenderer apiRespMusicShelfRenderer `json:"musicShelfRenderer,omitempty"`
+	// for albums, singles, videos, featured on & alike artists
+	MusicCarouselShelfRenderer apiRespMusicCarouselShelfRenderer `json:"musicCarouselShelfRenderer,omitempty"`
+	// for album views
+	MusicDescriptionShelfRenderer apiRespMusicDescriptionSection `json:"musicDescriptionShelfRenderer,omitempty"`
 }
 
-// for Songs
+// for songs
 type apiRespMusicShelfRenderer struct {
 	Title struct {
 		Runs models.NavigationEndpointRuns `json:"runs,omitempty"`
@@ -39,24 +43,7 @@ type apiRespMusicShelfRenderer struct {
 	Contents []search.APIRespSectionContent `json:"contents,omitempty"`
 }
 
-/*
-// for Albums, Singles and Videos
-NavigationEndpoint struct {
-	BrowseEndpoint struct {
-		BrowseID string `json:"browseId,omitempty"`
-
-		// determines discography being either single or album
-		Params string `json:"params,omitempty"`
-
-		BrowseEndpointContextSupportedConfigs struct {
-			BrowseEndpointContextMusicConfig struct {
-				PageType string `json:"pageType,omitempty"`
-			} `json:"browseEndpointContextMusicConfig,omitempty"`
-		} `json:"browseEndpointContextSupportedConfigs,omitempty"`
-	} `json:"browseEndpoint,omitempty"`
-} `json:"navigationEndpoint,omitempty"`
-*/
-
+// for albums, singles, videos, featured on & alike artists
 type apiRespMusicCarouselShelfRenderer struct {
 	Header struct {
 		MusicCarouselShelfBasicHeaderRenderer struct {
@@ -106,13 +93,15 @@ type apiRespMusicCarouselShelfRenderer struct {
 	} `json:"contents,omitempty"`
 }
 
-// about sectionListRendererContent
+// for album views
 type apiRespMusicDescriptionSection struct {
 	Subheader struct {
+		// views
 		Runs models.BasicRuns `json:"runs,omitempty"`
 	} `json:"subheader,omitempty"`
 }
 
+// for meta data of the album
 type apiRespHeader struct {
 	MusicImmersiveHeaderRenderer struct {
 		Title struct {
