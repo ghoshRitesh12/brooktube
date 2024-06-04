@@ -3,6 +3,7 @@ package requests
 import (
 	"net/url"
 
+	"github.com/ghoshRitesh12/brooktube/helpers"
 	"github.com/ghoshRitesh12/brooktube/models/artist"
 	"github.com/ghoshRitesh12/brooktube/utils"
 )
@@ -14,7 +15,7 @@ func FetchArtist(artistChannelID string) (*artist.APIResp, error) {
 		return nil, err
 	}
 
-	body := utils.NewBrowserEndpointContext(utils.MUSIC_PAGE_TYPE_ARTIST, artistChannelID)
+	body := helpers.NewBrowserEndpointContext(utils.MUSIC_PAGE_TYPE_ARTIST, artistChannelID)
 	queryParams := reqURL.Query()
 
 	queryParams.Set("prettyPrint", "false")

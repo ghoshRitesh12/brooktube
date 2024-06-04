@@ -1,9 +1,9 @@
 package parsers
 
 import (
+	"github.com/ghoshRitesh12/brooktube/helpers"
 	"github.com/ghoshRitesh12/brooktube/models/search"
 	"github.com/ghoshRitesh12/brooktube/requests"
-	"github.com/ghoshRitesh12/brooktube/utils"
 )
 
 type SearchParserParams struct {
@@ -11,7 +11,7 @@ type SearchParserParams struct {
 	ContinuationToken string                // token used for fetching paginated data
 }
 
-func (p *YtMusicParser) GetSearchResults(query string, params SearchParserParams) (search.ScrapedData, error) {
+func (p *YTMusicAPI) GetSearchResults(query string, params SearchParserParams) (search.ScrapedData, error) {
 	result := search.ScrapedData{}
 
 	if _, ok := search.SEARCH_PARAMS_KEYS[params.Category]; !ok || params.Category == "" {
@@ -30,8 +30,8 @@ func (p *YtMusicParser) GetSearchResults(query string, params SearchParserParams
 	if params.ContinuationToken != "" {
 		section := data.ContinuationContents.MusicShelfContinuation
 
-		result.ContinuationToken = utils.PickContinuationToken(section.Continuations)
-		result.Content = utils.ParseSearchContent(params.Category, section.Contents)
+		result.ContinuationToken = helpers.PickContinuationToken(section.Continuations)
+		result.Content = helpers.ParseSearchContent(params.Category, section.Contents)
 
 		return result, nil
 	}
@@ -43,11 +43,11 @@ func (p *YtMusicParser) GetSearchResults(query string, params SearchParserParams
 	}
 	section := sections[0]
 
-	result.ContinuationToken = utils.PickContinuationToken(section.MusicShelfRenderer.Continuations)
-	result.Title = utils.ParseYtTextField(utils.ParseYtTextParams{
+	result.ContinuationToken = helpers.PickContinuationToken(section.MusicShelfRenderer.Continuations)
+	result.Title = helpers.ParseYtTextField(helpers.ParseYtTextParams{
 		NormalRuns: section.MusicShelfRenderer.Title.Runs,
 	})
-	result.Content = utils.ParseSearchContent(params.Category, section.MusicShelfRenderer.Contents)
+	result.Content = helpers.ParseSearchContent(params.Category, section.MusicShelfRenderer.Contents)
 
 	return result, nil
 }

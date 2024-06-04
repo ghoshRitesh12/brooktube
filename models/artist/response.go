@@ -4,6 +4,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/ghoshRitesh12/brooktube/helpers"
 	"github.com/ghoshRitesh12/brooktube/models/search"
 	"github.com/ghoshRitesh12/brooktube/utils"
 )
@@ -65,7 +66,7 @@ func (songsSection *ArtistSongsSection) ScrapeAndSet(
 	songsSection.SeeMorePlaylistId = browseId
 
 	// spew.Dump("Before parsing song contents", len(section.Contents))
-	songsSection.Contents = utils.ParseArtistSongContents(&(section.Contents))
+	songsSection.Contents = helpers.ParseArtistSongContents(&(section.Contents))
 }
 
 type (
