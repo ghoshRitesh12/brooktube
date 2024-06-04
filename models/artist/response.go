@@ -31,23 +31,23 @@ func (artist *ScrapedData) ScrapeAndSetBasicInfo(
 ) {
 	defer wg.Done()
 
-	artist.Name = header.MusicImmersiveHeaderRenderer.Title.Runs.GetTextField()
-	artist.About = header.MusicImmersiveHeaderRenderer.Description.Runs.GetTextField()
+	artist.Name = header.MusicImmersiveHeaderRenderer.Title.Runs.GetText()
+	artist.About = header.MusicImmersiveHeaderRenderer.Description.Runs.GetText()
 	artist.Subscribers = header.MusicImmersiveHeaderRenderer.
 		SubscriptionButton.SubscribeButtonRenderer.
-		SubscriberCountText.Runs.GetTextField()
+		SubscriberCountText.Runs.GetText()
 
 	artist.Views = strings.Split(
 		(*sections)[len(*sections)-1].
 			MusicDescriptionShelfRenderer.Subheader.
-			Runs.GetTextField(),
+			Runs.GetText(),
 		" ",
 	)[0]
 }
 
 type ArtistSongsSection struct {
-	Contents          []search.SongOrVideo `json:"contents,omitempty"`
-	SeeMorePlaylistId string               `json:"seeMorePlaylistId"`
+	Contents          search.Songs `json:"contents,omitempty"`
+	SeeMorePlaylistId string       `json:"seeMorePlaylistId"`
 }
 
 // scrapes songs section data and sets it
@@ -58,14 +58,12 @@ func (songsSection *ArtistSongsSection) ScrapeAndSet(
 	defer wg.Done()
 	section := (*sections)[0].MusicShelfRenderer
 
-	if section.Title.Runs.GetTextField() != "Songs" {
+	if section.Title.Runs.GetText() != "Songs" {
 		return
 	}
 
 	_, browseId := section.Title.Runs.GetNavData(0)
 	songsSection.SeeMorePlaylistId = browseId
-
-	// spew.Dump("Before parsing song contents", len(section.Contents))
 	songsSection.Contents = helpers.ParseArtistSongContents(&(section.Contents))
 }
 
@@ -108,8 +106,8 @@ func (albumsSection *ArtistAlbumsSection) ScrapeAndSet(
 			artistAlbum{
 				AlbumId: content.MusicTwoRowItemRenderer.
 					NavigationEndpoint.BrowseEndpoint.BrowseID,
-				Title:    content.MusicTwoRowItemRenderer.Title.Runs.GetTextField(),
-				Subtitle: content.MusicTwoRowItemRenderer.Subtitle.Runs.GetTextField(),
+				Title:    content.MusicTwoRowItemRenderer.Title.Runs.GetText(),
+				Subtitle: content.MusicTwoRowItemRenderer.Subtitle.Runs.GetText(),
 			},
 		)
 	}
@@ -155,8 +153,8 @@ func (singlesSection *ArtistSinglesSection) ScrapeAndSet(
 			artistSingle{
 				AlbumId: content.MusicTwoRowItemRenderer.
 					NavigationEndpoint.BrowseEndpoint.BrowseID,
-				Title:    content.MusicTwoRowItemRenderer.Title.Runs.GetTextField(),
-				Subtitle: content.MusicTwoRowItemRenderer.Subtitle.Runs.GetTextField(),
+				Title:    content.MusicTwoRowItemRenderer.Title.Runs.GetText(),
+				Subtitle: content.MusicTwoRowItemRenderer.Subtitle.Runs.GetText(),
 			},
 		)
 	}
@@ -197,8 +195,8 @@ func (videosSection *ArtistVideosSection) ScrapeAndSet(
 			artistVideo{
 				VideoId: content.MusicTwoRowItemRenderer.
 					NavigationEndpoint.WatchEndpoint.VideoID,
-				Title:    content.MusicTwoRowItemRenderer.Title.Runs.GetTextField(),
-				Subtitle: content.MusicTwoRowItemRenderer.Subtitle.Runs.GetTextField(),
+				Title:    content.MusicTwoRowItemRenderer.Title.Runs.GetText(),
+				Subtitle: content.MusicTwoRowItemRenderer.Subtitle.Runs.GetText(),
 			},
 		)
 	}
@@ -233,7 +231,7 @@ func (featuredOnSection *ArtistFeaturedOnSection) ScrapeAndSet(
 		featuredOnSection.Contents = append(
 			featuredOnSection.Contents,
 			artistFeaturedOn{
-				Title:      content.MusicTwoRowItemRenderer.Title.Runs.GetTextField(),
+				Title:      content.MusicTwoRowItemRenderer.Title.Runs.GetText(),
 				PlaylistId: browseEndpoint.BrowseID,
 			},
 		)
@@ -278,10 +276,10 @@ func (alikeArtistSection *AlikeArtistsSection) ScrapeAndSet(
 		alikeArtistSection.Contents = append(
 			alikeArtistSection.Contents,
 			alikeArtist{
-				Name:      content.MusicTwoRowItemRenderer.Title.Runs.GetTextField(),
+				Name:      content.MusicTwoRowItemRenderer.Title.Runs.GetText(),
 				ChannelId: browseEndpoint.BrowseID,
 				Subscribers: strings.Split(
-					content.MusicTwoRowItemRenderer.Subtitle.Runs.GetTextField(),
+					content.MusicTwoRowItemRenderer.Subtitle.Runs.GetText(),
 					" ",
 				)[0],
 			},
