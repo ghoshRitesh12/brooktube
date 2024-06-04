@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"regexp"
@@ -41,17 +40,17 @@ func GetAlbumBrowseId(albumId string) (string, error) {
 		return "", err
 	}
 
-	browseIdRegex := regexp.MustCompile(`"MPREb_.+?"`)
-	match := browseIdRegex.FindStringSubmatch(string(rawHTML))
-	if len(match) != 1 {
-		return "", fmt.Errorf("could not get album browse id")
+	browseIdPattern := `"MPREb_.+?"`
+	parseBrowseIdPattern := `MPREb_[^\\"]+`
+
+	foundBrowseId := regexp.MustCompile(browseIdPattern).FindString(string(rawHTML))
+	if foundBrowseId == "" {
+		return "", utils.ErrCouldntGetAlbumBrowseId
 	}
 
-	foundBrowseId := match[0]
-	parsedBrowserId := regexp.MustCompile(`MPREb_[^\\"]+`).FindString(foundBrowseId)
-
+	parsedBrowserId := regexp.MustCompile(parseBrowseIdPattern).FindString(foundBrowseId)
 	if parsedBrowserId == "" {
-		return "", fmt.Errorf("could not get album browse id")
+		return "", utils.ErrCouldntGetAlbumBrowseId
 	}
 
 	return parsedBrowserId, nil
