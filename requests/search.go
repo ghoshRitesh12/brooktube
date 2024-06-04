@@ -7,11 +7,11 @@ import (
 	"github.com/ghoshRitesh12/brooktube/utils"
 )
 
-func FetchSearchResults(query string, category search.SearchCategory, continuationToken string) (search.APIResp, error) {
+func FetchSearchResults(query string, category search.SearchCategory, continuationToken string) (*search.APIResp, error) {
 	method := "POST"
 	reqURL, err := url.Parse(utils.HOST + utils.SEARCH_PATH)
 	if err != nil {
-		return search.APIResp{}, err
+		return nil, err
 	}
 
 	body := map[string]any{}
@@ -41,8 +41,8 @@ func FetchSearchResults(query string, category search.SearchCategory, continuati
 
 	data, err := fetch[search.APIResp](method, reqURL.String(), body, headers)
 	if err != nil {
-		return data, err
+		return nil, err
 	}
 
-	return data, nil
+	return &data, nil
 }
