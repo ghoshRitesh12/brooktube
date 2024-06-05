@@ -10,49 +10,44 @@ func ParseArtistSongContents(shelfContents *[]search.APIRespSectionContent) []se
 
 	for _, content := range *shelfContents {
 		songOrVideo := search.SongOrVideo{
-			SongOrVideoId: content.MusicResponsiveListItemRenderer.PlaylistItemData.VideoId,
+			SongOrVideoId: content.
+				MusicResponsiveListItemRenderer.
+				PlaylistItemData.VideoId,
 		}
 
 		for i, flexColumn := range content.MusicResponsiveListItemRenderer.FlexColumns {
-			textRuns := flexColumn.MusicResponsiveListItemFlexColumnRenderer.Text.Runs
+			textRuns := flexColumn.
+				MusicResponsiveListItemFlexColumnRenderer.
+				Text.Runs
 
 			switch i {
 			case 0:
-				songOrVideo.Name = ParseYtTextField(ParseYtTextParams{
-					FlexColumnRuns: textRuns,
-				})
+				songOrVideo.Name = textRuns.GetText()
 
 			case 1:
-				songOrVideo.ArtistName = textRuns[0].Text
+				songOrVideo.ArtistName = textRuns.GetText(0)
 
-				artistEndpoint := flexColumn.
+				pageType, browseId, _ := flexColumn.
 					MusicResponsiveListItemFlexColumnRenderer.
-					Text.Runs[0].NavigationEndpoint.BrowseEndpoint
+					Text.Runs.GetNavData(0)
 
-				if artistEndpoint.
-					BrowseEndpointContextSupportedConfigs.
-					BrowseEndpointContextMusicConfig.
-					PageType == utils.MUSIC_PAGE_TYPE_ARTIST {
-					songOrVideo.ArtistChannelId = artistEndpoint.BrowseID
+				if pageType == utils.MUSIC_PAGE_TYPE_ARTIST {
+					songOrVideo.ArtistChannelId = browseId
 				}
 
 			case 2:
-				songOrVideo.Interactions = textRuns[0].Text
+				songOrVideo.Interactions = textRuns.GetText(0)
 
 			case 3:
-				albumBrowseEndpoint := flexColumn.
+				innerTextRuns := flexColumn.
 					MusicResponsiveListItemFlexColumnRenderer.
-					Text.Runs[0].NavigationEndpoint.BrowseEndpoint
+					Text.Runs
 
-				if albumBrowseEndpoint.
-					BrowseEndpointContextSupportedConfigs.
-					BrowseEndpointContextMusicConfig.
-					PageType == utils.MUSIC_PAGE_TYPE_ALBUM {
-					songOrVideo.AlbumName = flexColumn.
-						MusicResponsiveListItemFlexColumnRenderer.
-						Text.Runs[0].Text
+				songOrVideo.AlbumName = innerTextRuns.GetText(0)
 
-					songOrVideo.AlbumId = albumBrowseEndpoint.BrowseID
+				pageType, browseId, _ := innerTextRuns.GetNavData(0)
+				if pageType == utils.MUSIC_PAGE_TYPE_ALBUM {
+					songOrVideo.AlbumId = browseId
 				}
 			}
 		}
