@@ -19,9 +19,9 @@ const (
 	MUSIC_PAGE_TYPE_ARTIST_DISCOGRAPHY string = "MUSIC_PAGE_TYPE_ARTIST_DISCOGRAPHY"
 )
 
-const (
-	USER_AGENT_HEADER string = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
-)
+const MUSIC_EXPLICIT_BADGE string = "MUSIC_EXPLICIT_BADGE"
+
+const USER_AGENT_HEADER string = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
 
 const (
 	HL             string = "en"
