@@ -46,7 +46,7 @@ type apiRespSectionContinuation struct {
 
 type APIRespSectionContent struct {
 	MusicResponsiveListItemRenderer struct {
-		FlexColumns []apiRespFlexColumns `json:"flexColumns"`
+		FlexColumns []ApiRespFlexColumns `json:"flexColumns"`
 
 		Menu struct {
 			MenuRenderer struct {
@@ -77,7 +77,7 @@ type APIRespSectionContent struct {
 	} `json:"musicResponsiveListItemRenderer"`
 }
 
-type apiRespFlexColumns struct {
+type ApiRespFlexColumns struct {
 	MusicResponsiveListItemFlexColumnRenderer struct {
 		Text struct {
 			Runs models.NavigationAndWatchEndpointRuns
