@@ -7,7 +7,7 @@ import (
 	"github.com/ghoshRitesh12/brooktube/requests"
 )
 
-const SCRAPE_OPERATIONS int = 7
+const ARTIST_SCRAPE_OPERATIONS int = 7
 
 func (p *YTMusicAPI) GetArtist(artistChannelID string) (*artist.ScrapedData, error) {
 	wg := &sync.WaitGroup{}
@@ -25,7 +25,7 @@ func (p *YTMusicAPI) GetArtist(artistChannelID string) (*artist.ScrapedData, err
 		return result, nil
 	}
 
-	wg.Add(SCRAPE_OPERATIONS)
+	wg.Add(ARTIST_SCRAPE_OPERATIONS)
 
 	go result.ScrapeAndSetBasicInfo(wg, &data.Header, sections)
 	go result.SongsSection.ScrapeAndSet(wg, sections)
