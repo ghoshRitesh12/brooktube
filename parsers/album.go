@@ -11,13 +11,14 @@ import (
 )
 
 const ALBUM_SCRAPE_OPERATIONS int = 2
+const ALBUM_BROWSE_ID_PREFIX string = "MPREb_"
 
 func (p *YTMusicAPI) GetAlbum(albumId string) (*album.ScrapedData, error) {
 	wg := &sync.WaitGroup{}
 	result := &album.ScrapedData{}
 	albumBrowseId := ""
 
-	if strings.HasPrefix(albumId, "MPREb_") {
+	if strings.HasPrefix(albumId, ALBUM_BROWSE_ID_PREFIX) {
 		albumBrowseId = albumId
 	} else {
 		browseId, err := helpers.GetAlbumBrowseId(albumId)
