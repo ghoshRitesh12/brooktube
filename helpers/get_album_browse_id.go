@@ -9,14 +9,16 @@ import (
 	"github.com/ghoshRitesh12/brooktube/utils"
 )
 
-const PLAYLIST_ID_PREFIX = "VL"
+const RAW_ALBUM_ID_PREFIX string = "OLAK5"
 
 /*
 takes in album id that start with "OLAK5" and returns browse id
 that starts with "MPREb_"
 */
 func GetAlbumBrowseId(albumId string) (string, error) {
-	albumId = strings.TrimPrefix(albumId, PLAYLIST_ID_PREFIX)
+	if !strings.HasPrefix(albumId, RAW_ALBUM_ID_PREFIX) {
+		return "", utils.ErrInvalidAlbumId
+	}
 
 	url := utils.HOST + utils.PLAYLIST_PATH + albumId
 	headers := map[string]string{
