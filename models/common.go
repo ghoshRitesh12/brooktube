@@ -31,3 +31,10 @@ func (badges *Badges) IsExplicit() bool {
 	}
 	return false
 }
+
+type DisplayPolicy string
+
+func (displayPolicy DisplayPolicy) IsDisabled() bool {
+	policy := string(displayPolicy)
+	return policy == utils.MUSIC_ITEM_RENDERER_DISPLAY_POLICY_GREY_OUT || policy != ""
+}
