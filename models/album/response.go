@@ -33,10 +33,7 @@ func (album *ScrapedData) ScrapeAndSetBasicInfo(
 
 	album.Title = headerRenderer.Title.Runs.GetText()
 	album.Subtitle = headerRenderer.Subtitle.Runs.GetText()
-	album.Description = strings.Split(
-		headerRenderer.Description.Runs.GetText(),
-		"\n\n",
-	)[0]
+	album.Description = headerRenderer.Description.Runs.GetText()
 
 	album.YearOfRelease = headerRenderer.Subtitle.Runs.GetText(
 		uint8(len(headerRenderer.Subtitle.Runs) - 1),
@@ -68,14 +65,14 @@ type (
 
 func (albumSongs *AlbumSongs) ScrapeAndSet(
 	wg *sync.WaitGroup,
-	sections *[]apiRespSectionContent,
+	contents *[]apiRespSectionContent,
 ) {
 	defer wg.Done()
 
-	preAlbumSongs := make(AlbumSongs, 0, len(*sections))
+	preAlbumSongs := make(AlbumSongs, 0, len(*contents))
 	*albumSongs = preAlbumSongs
 
-	for _, content := range *sections {
+	for _, content := range *contents {
 		contentData := content.MusicResponsiveListItemRenderer
 		albumSong := AlbumSong{
 			SongOrVideoId: contentData.PlaylistItemData.VideoID,
