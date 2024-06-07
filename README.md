@@ -15,8 +15,8 @@ There are going to be somewhat like 5 parsers:
 
 - [x] [Artist parser](https://music.youtube.com/channel/UCedvOgsKFzcK3hA5taf3KoQ)
 
-- [ ] [Playlist parser](https://music.youtube.com/playlist?list=PLtwDCqqblBclwxAvPP0lTN56iWBjshBv7)
+- [x] [Album parser](https://music.youtube.com/playlist?list=OLAK5uy_kkypLq7TlpT3uYdH3MbuHDiF2J3u-BRjc)
 
-- [ ] [Album parser](https://music.youtube.com/playlist?list=OLAK5uy_kkypLq7TlpT3uYdH3MbuHDiF2J3u-BRjc)
+- [ ] [Playlist parser](https://music.youtube.com/playlist?list=PLtwDCqqblBclwxAvPP0lTN56iWBjshBv7)
 
 - [ ] Player parser
