@@ -13,7 +13,7 @@ import (
 const ALBUM_SCRAPE_OPERATIONS int = 2
 const ALBUM_BROWSE_ID_PREFIX string = "MPREb_"
 
-func (p *YTMusicAPI) GetAlbum(albumId string) (*album.ScrapedData, error) {
+func (p *Scraper) GetAlbum(albumId string) (*album.ScrapedData, error) {
 	wg := &sync.WaitGroup{}
 	result := &album.ScrapedData{}
 	albumBrowseId := ""

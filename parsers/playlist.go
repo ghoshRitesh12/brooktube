@@ -16,7 +16,7 @@ const (
 )
 
 // `contiuationToken` is optional, if provided only 0th element will be used
-func (p *YTMusicAPI) GetPlaylist(
+func (p *Scraper) GetPlaylist(
 	playlistId string,
 	continuationToken ...string,
 ) (*playlist.ScrapedData, error) {

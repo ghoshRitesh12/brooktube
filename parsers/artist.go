@@ -9,7 +9,7 @@ import (
 
 const ARTIST_SCRAPE_OPERATIONS int = 7
 
-func (p *YTMusicAPI) GetArtist(artistChannelID string) (*artist.ScrapedData, error) {
+func (p *Scraper) GetArtist(artistChannelID string) (*artist.ScrapedData, error) {
 	wg := &sync.WaitGroup{}
 	result := &artist.ScrapedData{}
 
