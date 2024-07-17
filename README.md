@@ -7,16 +7,24 @@
 |_.__/|_|  \___/ \___/|_|\_\\__|\__,_|_.__/ \___|
 ```
 
-a basic yt music unofficial package made for Brook internals
+<div align="center">
 
-There are going to be somewhat like 5 parsers:
+[![Go Reference](https://pkg.go.dev/badge/github.com/ghoshRitesh12/brooktube.svg)](https://pkg.go.dev/github.com/ghoshRitesh12/brooktube)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ghoshRitesh12/brooktube)](https://goreportcard.com/report/github.com/ghoshRitesh12/brooktube)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/ghoshRitesh12/brooktube/blob/main/LICENSE)
 
-- [x] Search parser
+</div>
 
-- [x] [Artist parser](https://music.youtube.com/channel/UCedvOgsKFzcK3hA5taf3KoQ)
+A YT Music unofficial scraper package made for Brook internals, written in Go.
 
-- [x] [Album parser](https://music.youtube.com/playlist?list=OLAK5uy_kkypLq7TlpT3uYdH3MbuHDiF2J3u-BRjc)
-
-- [ ] [Playlist parser](https://music.youtube.com/playlist?list=PLtwDCqqblBclwxAvPP0lTN56iWBjshBv7)
-
-- [ ] Player parser
+> There are going to be somewhat like 5 parsers:
+>
+> - [x] Search parser
+>
+> - [x] [Artist parser](https://music.youtube.com/channel/UCedvOgsKFzcK3hA5taf3KoQ)
+>
+> - [x] [Album parser](https://music.youtube.com/playlist?list=OLAK5uy_kkypLq7TlpT3uYdH3MbuHDiF2J3u-BRjc)
+>
+> - [ ] [Playlist parser](https://music.youtube.com/playlist?list=PLtwDCqqblBclwxAvPP0lTN56iWBjshBv7)
+>
+> - [ ] Player parser
