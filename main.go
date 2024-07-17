@@ -1,8 +1,6 @@
 package brooktube
 
-import (
-	parser "github.com/ghoshRitesh12/brooktube/parsers"
-)
+import "github.com/ghoshRitesh12/brooktube/parsers"
 
 const ASCIIArt string = `
  _                     _    _         _
@@ -13,6 +11,10 @@ const ASCIIArt string = `
 |_.__/|_|  \___/ \___/|_|\_\\__|\__,_|_.__/ \___|
 `
 
-func New() *parser.YTMusicAPI {
-	return parser.New()
+type YTMusicScraper struct {
+	parsers.Scraper
+}
+
+func New() *YTMusicScraper {
+	return &YTMusicScraper{}
 }
