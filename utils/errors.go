@@ -3,15 +3,15 @@ package utils
 import "errors"
 
 var (
-	ErrCouldntGetAlbumBrowseId = errors.New("could't get album browse id")
-	ErrInvalidAlbumBrowseId    = errors.New("invalid album browse id")
-	ErrAlbumContentsNotFound   = errors.New("album contents not found")
-	ErrInvalidAlbumId          = errors.New("invalid album id")
+	ErrInvalidAlbumId          = errors.New("album_parser: invalid album id")
+	ErrInvalidAlbumBrowseId    = errors.New("album_parser: invalid album browse id")
+	ErrAlbumContentsNotFound   = errors.New("album_parser: album contents not found")
+	ErrCouldntGetAlbumBrowseId = errors.New("album_parser: could't get album browse id")
 )
 
 var (
-	ErrPlaylistContentsNotFound = errors.New("playlist contents not found")
-	ErrInvalidPlaylistId        = errors.New("invalid playlist id")
+	ErrInvalidPlaylistId        = errors.New("playlist_parser: invalid playlist id")
+	ErrPlaylistContentsNotFound = errors.New("playlist_parser: playlist contents not found")
 )
 
-var ErrInvalidContinuationToken = errors.New("invalid continuation token")
+var ErrInvalidContinuationToken = errors.New("continued_content: invalid continuation token")
