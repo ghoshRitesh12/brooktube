@@ -11,10 +11,10 @@ const ASCIIArt string = `
 |_.__/|_|  \___/ \___/|_|\_\\__|\__,_|_.__/ \___|
 `
 
-type YTMusicScraper struct {
+type scraper struct {
 	parsers.Scraper
 }
 
-func New() *YTMusicScraper {
-	return &YTMusicScraper{}
+func New() *scraper {
+	return &scraper{}
 }
