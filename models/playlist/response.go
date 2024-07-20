@@ -4,80 +4,87 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/ghoshRitesh12/brooktube/models"
 	"github.com/ghoshRitesh12/brooktube/utils"
 )
 
 type ScrapedData struct {
 	Title         string `json:"title"`
 	Subtitle      string `json:"subtitle"`
+	CoverArt      string `json:"coverArt"`
 	Description   string `json:"description"`
 	YearOfRelease string `json:"yearOfRelease"`
 
-	TrackCount   string `json:"trackCount"`
-	Interactions string `json:"interactions"`
+	TrackCount     string `json:"trackCount"`
+	Interactions   string `json:"interactions"`
+	ListeningHours string `json:"listeningHours"`
 
 	ArtistName      string `json:"artistName"`
 	ArtistChannelId string `json:"artistChannelId"`
 
-	Tracks PlaylistTracks `json:"tracks"`
+	Tracks Tracks `json:"tracks"`
+
+	ContinuationTokens []string `json:"continuationToken"`
 }
 
 // scrapes and sets basic info of the playlist
-func (playlist *ScrapedData) ScrapeAndSetBasicInfo(
-	wg *sync.WaitGroup,
-	header *apiRespHeader,
-) {
+func (playlist *ScrapedData) ScrapeAndSetBasicInfo(wg *sync.WaitGroup, header *apiRespHeader, background *models.Thumbnail) {
 	defer wg.Done()
 
-	headerRenderer := header.MusicDetailHeaderRenderer
+	headerRenderer := header.MusicResponsiveHeaderRenderer
 
 	playlist.Title = headerRenderer.Title.Runs.GetText()
 	playlist.Subtitle = headerRenderer.Subtitle.Runs.GetText()
-	playlist.Description = headerRenderer.Description.Runs.GetText()
+	playlist.Description = headerRenderer.Description.
+		MusicDescriptionShelfRenderer.Description.Runs.GetText()
+
 	playlist.YearOfRelease = headerRenderer.Subtitle.Runs.GetText(
 		uint8(len(headerRenderer.Subtitle.Runs) - 1),
 	)
 
-	playlist.ArtistName = headerRenderer.Subtitle.Runs.GetText(2)
-	_, browseId := headerRenderer.Subtitle.Runs.GetNavData(2)
+	playlist.ArtistName = headerRenderer.StraplineTextOne.Runs.GetText()
+	_, browseId := headerRenderer.StraplineTextOne.Runs.GetNavData(0)
 	playlist.ArtistChannelId = browseId
 
 	playlist.Interactions = headerRenderer.SecondSubtitle.Runs.GetText(0)
+	playlist.ListeningHours = headerRenderer.SecondSubtitle.Runs.GetText(4)
 	playlist.TrackCount = strings.Split(
 		headerRenderer.SecondSubtitle.Runs.GetText(2),
 		" ",
 	)[0]
+
+	playlist.CoverArt = background.GetThumbnail(0)
 }
 
 type (
-	PlaylistTrack struct {
-		SongOrVideoId   string `json:"songOrVideoId"`
-		Name            string `json:"name"`
-		ArtistName      string `json:"artistName"`
-		ArtistChannelId string `json:"artistChannelId"`
-		Duration        string `json:"duration"` // from fixedColumns
-		// Interactions    string `json:"interactions"`
-		IsExplicit bool `json:"isExplicit"`
-		IsDisabled bool `json:"isDisabled"`
+	Track struct {
+		SongOrVideoId string `json:"songOrVideoId"`
+		Name          string `json:"name"`
+		Duration      string `json:"duration"` // from fixedColumns
+		Thumbnail     string `json:"thumbnail"`
+		IsExplicit    bool   `json:"isExplicit"`
+		IsDisabled    bool   `json:"isDisabled"`
+
+		ChannelName string `json:"channelName"`
+		ChannelId   string `json:"channelId"`
 	}
-	PlaylistTracks []PlaylistTrack
+	Tracks []Track
 )
 
-func (playlistTracks *PlaylistTracks) ScrapeAndSet(
-	wg *sync.WaitGroup,
-	contents *[]apiRespSectionContent,
-) {
-	defer wg.Done()
+func (tracks *Tracks) ScrapeAndSet(wg *sync.WaitGroup, contents *[]apiRespSectionContent) {
+	if wg != nil {
+		defer wg.Done()
+	}
 
-	prePlaylistTracks := make(PlaylistTracks, 0, len(*contents))
-	*playlistTracks = prePlaylistTracks
+	*tracks = make(Tracks, 0, len(*contents))
 
 	for _, content := range *contents {
 		contentData := content.MusicResponsiveListItemRenderer
-		playlistTrack := PlaylistTrack{
+		playlistTrack := Track{
 			SongOrVideoId: contentData.PlaylistItemData.VideoID,
 			IsExplicit:    contentData.Badges.IsExplicit(),
 			IsDisabled:    contentData.MusicItemRendererDisplayPolicy.IsDisabled(),
+			Thumbnail:     contentData.Thumbnail.GetThumbnail(0),
 		}
 
 		for i, fixedColumn := range contentData.FixedColumns {
@@ -99,12 +106,12 @@ func (playlistTracks *PlaylistTracks) ScrapeAndSet(
 				playlistTrack.Name = textRuns.GetText()
 
 			case 1:
-				playlistTrack.ArtistName = textRuns.GetText()
+				playlistTrack.ChannelName = textRuns.GetText()
 
 				pageType, browseId, _ := textRuns.GetNavData(0)
 				if (pageType == utils.MUSIC_PAGE_TYPE_ARTIST) ||
 					(pageType == utils.MUSIC_PAGE_TYPE_USER_CHANNEL) {
-					playlistTrack.ArtistChannelId = browseId
+					playlistTrack.ChannelId = browseId
 				}
 
 				// case 2:
@@ -112,6 +119,6 @@ func (playlistTracks *PlaylistTracks) ScrapeAndSet(
 			}
 		}
 
-		*playlistTracks = append(*playlistTracks, playlistTrack)
+		*tracks = append(*tracks, playlistTrack)
 	}
 }
