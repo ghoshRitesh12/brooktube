@@ -31,7 +31,7 @@ func (p *Scraper) GetPlaylist(playlistId string) (*playlist.ScrapedData, error) 
 
 	tabs := data.Contents.TwoColumnBrowseResultsRenderer.Tabs
 	if len(tabs) == 0 {
-		return result, nil
+		return nil, utils.ErrPlaylistContentsNotFound
 	}
 
 	headerContents := tabs[0].TabRenderer.Content.SectionListRenderer.Contents
@@ -46,7 +46,6 @@ func (p *Scraper) GetPlaylist(playlistId string) (*playlist.ScrapedData, error) 
 	}
 
 	sections := &(outerContents[0].MusicPlaylistShelfRenderer.Contents)
-
 	if len(*sections) == 0 {
 		return result, nil
 	}
