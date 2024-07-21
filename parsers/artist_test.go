@@ -7,14 +7,27 @@ import (
 	"github.com/ghoshRitesh12/brooktube"
 )
 
+// go test -run TestGetArtist ./parsers -v -count=1
 func TestGetArtist(t *testing.T) {
-	const EMINEM_CHANNEL_ID = "UCedvOgsKFzcK3hA5taf3KoQ"
-	brooktube := brooktube.New()
-
-	artist, err := brooktube.GetArtist(EMINEM_CHANNEL_ID)
-	if err != nil {
-		t.Error(err)
+	testsTable := []struct {
+		channelName string
+		channelId   string
+	}{
+		{"eminem", "UCedvOgsKFzcK3hA5taf3KoQ"},
+		{"naruto playlist guy", "UClX0RWY5bWVzGrWMTTD8iIQ"},
 	}
 
-	spew.Dump(artist)
+	btube := brooktube.New()
+
+	for _, test := range testsTable {
+		t.Run(test.channelName, func(t *testing.T) {
+
+			artist, err := btube.GetArtist(test.channelId)
+			if err != nil {
+				t.Error(err)
+			}
+
+			spew.Dump(artist)
+		})
+	}
 }

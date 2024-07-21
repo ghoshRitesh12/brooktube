@@ -1,6 +1,6 @@
 package search
 
-import "github.com/ghoshRitesh12/brooktube/models"
+import "github.com/ghoshRitesh12/brooktube/internal/models"
 
 type APIResp struct {
 	Contents struct {

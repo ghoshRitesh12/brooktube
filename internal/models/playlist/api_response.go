@@ -1,8 +1,8 @@
 package playlist
 
 import (
-	"github.com/ghoshRitesh12/brooktube/models"
-	"github.com/ghoshRitesh12/brooktube/models/search"
+	"github.com/ghoshRitesh12/brooktube/internal/models"
+	"github.com/ghoshRitesh12/brooktube/internal/models/search"
 )
 
 type APIResp struct {

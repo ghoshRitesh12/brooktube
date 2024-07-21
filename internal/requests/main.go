@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ghoshRitesh12/brooktube/utils"
+	"github.com/ghoshRitesh12/brooktube/internal/utils"
 )
 
 var defaultHeaders = map[string]string{

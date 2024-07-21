@@ -1,9 +1,9 @@
 package parsers
 
 import (
-	"github.com/ghoshRitesh12/brooktube/helpers"
-	"github.com/ghoshRitesh12/brooktube/models/search"
-	"github.com/ghoshRitesh12/brooktube/requests"
+	"github.com/ghoshRitesh12/brooktube/internal/helpers"
+	"github.com/ghoshRitesh12/brooktube/internal/models/search"
+	"github.com/ghoshRitesh12/brooktube/internal/requests"
 )
 
 type SearchParserParams struct {

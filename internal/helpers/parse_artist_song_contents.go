@@ -1,8 +1,8 @@
 package helpers
 
 import (
-	"github.com/ghoshRitesh12/brooktube/models/search"
-	"github.com/ghoshRitesh12/brooktube/utils"
+	"github.com/ghoshRitesh12/brooktube/internal/models/search"
+	"github.com/ghoshRitesh12/brooktube/internal/utils"
 )
 
 func ParseArtistSongContents(shelfContents *[]search.APIRespSectionContent) []search.SongOrVideo {

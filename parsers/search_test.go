@@ -5,7 +5,7 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/ghoshRitesh12/brooktube"
-	"github.com/ghoshRitesh12/brooktube/models/search"
+	"github.com/ghoshRitesh12/brooktube/internal/models/search"
 	"github.com/ghoshRitesh12/brooktube/parsers"
 )
 

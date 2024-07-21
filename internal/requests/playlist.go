@@ -3,9 +3,9 @@ package requests
 import (
 	"net/url"
 
-	"github.com/ghoshRitesh12/brooktube/helpers"
-	"github.com/ghoshRitesh12/brooktube/models/playlist"
-	"github.com/ghoshRitesh12/brooktube/utils"
+	"github.com/ghoshRitesh12/brooktube/internal/helpers"
+	"github.com/ghoshRitesh12/brooktube/internal/models/playlist"
+	"github.com/ghoshRitesh12/brooktube/internal/utils"
 )
 
 func FetchPlaylist(playlistId string) (*playlist.APIResp, error) {

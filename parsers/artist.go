@@ -3,8 +3,8 @@ package parsers
 import (
 	"sync"
 
-	"github.com/ghoshRitesh12/brooktube/models/artist"
-	"github.com/ghoshRitesh12/brooktube/requests"
+	"github.com/ghoshRitesh12/brooktube/internal/models/artist"
+	"github.com/ghoshRitesh12/brooktube/internal/requests"
 )
 
 const ARTIST_SCRAPE_OPERATIONS int = 7

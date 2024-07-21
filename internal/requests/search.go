@@ -3,8 +3,8 @@ package requests
 import (
 	"net/url"
 
-	"github.com/ghoshRitesh12/brooktube/models/search"
-	"github.com/ghoshRitesh12/brooktube/utils"
+	"github.com/ghoshRitesh12/brooktube/internal/models/search"
+	"github.com/ghoshRitesh12/brooktube/internal/utils"
 )
 
 func FetchSearchResults(query string, category search.SearchCategory, continuationToken string) (*search.APIResp, error) {

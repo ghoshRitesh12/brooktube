@@ -4,10 +4,10 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ghoshRitesh12/brooktube/helpers"
-	"github.com/ghoshRitesh12/brooktube/models/album"
-	"github.com/ghoshRitesh12/brooktube/requests"
-	"github.com/ghoshRitesh12/brooktube/utils"
+	"github.com/ghoshRitesh12/brooktube/internal/helpers"
+	"github.com/ghoshRitesh12/brooktube/internal/models/album"
+	"github.com/ghoshRitesh12/brooktube/internal/requests"
+	"github.com/ghoshRitesh12/brooktube/internal/utils"
 )
 
 const ALBUM_SCRAPE_OPERATIONS int = 2

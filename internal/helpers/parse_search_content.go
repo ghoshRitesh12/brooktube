@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"github.com/ghoshRitesh12/brooktube/models/search"
+	"github.com/ghoshRitesh12/brooktube/internal/models/search"
 )
 
 func ParseSearchContent(category search.SearchCategory, shelfContents []search.APIRespSectionContent) search.ResultContent {

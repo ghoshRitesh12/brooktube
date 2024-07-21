@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ghoshRitesh12/brooktube/utils"
+	"github.com/ghoshRitesh12/brooktube/internal/utils"
 )
 
 const RAW_ALBUM_ID_PREFIX string = "OLAK5"
