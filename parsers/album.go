@@ -14,9 +14,13 @@ const ALBUM_SCRAPE_OPERATIONS int = 2
 const ALBUM_BROWSE_ID_PREFIX string = "MPREb_"
 
 func (p *Scraper) GetAlbum(albumId string) (*album.ScrapedData, error) {
+	if albumId == "" {
+		return nil, utils.ErrInvalidAlbumBrowseId
+	}
+
+	albumBrowseId := ""
 	wg := &sync.WaitGroup{}
 	result := &album.ScrapedData{}
-	albumBrowseId := ""
 
 	if strings.HasPrefix(albumId, ALBUM_BROWSE_ID_PREFIX) {
 		albumBrowseId = albumId
@@ -37,23 +41,33 @@ func (p *Scraper) GetAlbum(albumId string) (*album.ScrapedData, error) {
 		return nil, err
 	}
 
-	outerContents := data.Contents.
-		SingleColumnBrowseResultsRenderer.Tabs[0].
-		TabRenderer.Content.SectionListRenderer.Contents
+	// spew.Dump(data)
+
+	tabs := data.Contents.TwoColumnBrowseResultsRenderer.Tabs
+	if len(tabs) == 0 {
+		return nil, utils.ErrAlbumContentsNotFound
+	}
+
+	headerContents := tabs[0].TabRenderer.Content.SectionListRenderer.Contents
+	if len(headerContents) < 1 {
+		return nil, utils.ErrAlbumContentsNotFound
+	}
+
+	outerContents := data.Contents.TwoColumnBrowseResultsRenderer.
+		SecondaryContents.SectionListRenderer.Contents
 	if len(outerContents) < 1 {
 		return nil, utils.ErrAlbumContentsNotFound
 	}
 
 	sections := &(outerContents[0].MusicShelfRenderer.Contents)
-
 	if len(*sections) == 0 {
 		return result, nil
 	}
 
 	wg.Add(ALBUM_SCRAPE_OPERATIONS)
 
-	go result.ScrapeAndSetBasicInfo(wg, &data.Header)
-	go result.Songs.ScrapeAndSet(wg, sections)
+	go result.ScrapeAndSetBasicInfo(wg, &headerContents[0], &data.Background)
+	go result.Tracks.ScrapeAndSet(wg, sections)
 
 	wg.Wait()
 
