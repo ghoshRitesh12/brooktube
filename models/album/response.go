@@ -1,87 +1,97 @@
 package album
 
 import (
+	"strconv"
 	"strings"
 	"sync"
 
+	"github.com/ghoshRitesh12/brooktube/models"
 	"github.com/ghoshRitesh12/brooktube/utils"
 )
 
 type ScrapedData struct {
 	Title         string `json:"title"`
 	Subtitle      string `json:"subtitle"`
+	CoverArt      string `json:"coverArt"`
 	Description   string `json:"description"`
 	YearOfRelease string `json:"yearOfRelease"`
 
-	SongCount     string `json:"songCount"`
+	TrackCount    string `json:"trackCount"`
 	TotalDuration string `json:"totalDuration"`
+	IsExplicit    bool   `json:"isExplicit"`
 
-	ArtistName      string `json:"artistName"`
-	ArtistChannelId string `json:"artistChannelId"`
+	ChannelName string `json:"channelName"`
+	ChannelId   string `json:"channelId"`
 
-	Songs AlbumSongs `json:"songs"`
+	Tracks Tracks `json:"tracks"`
 }
 
 // scrapes and sets basic info of the album
-func (album *ScrapedData) ScrapeAndSetBasicInfo(
-	wg *sync.WaitGroup,
-	header *apiRespHeader,
-) {
+func (album *ScrapedData) ScrapeAndSetBasicInfo(wg *sync.WaitGroup, header *apiRespHeader, background *models.Thumbnail) {
 	defer wg.Done()
 
-	headerRenderer := header.MusicDetailHeaderRenderer
+	headerRenderer := header.MusicResponsiveHeaderRenderer
 
 	album.Title = headerRenderer.Title.Runs.GetText()
 	album.Subtitle = headerRenderer.Subtitle.Runs.GetText()
-	album.Description = headerRenderer.Description.Runs.GetText()
+	album.Description = headerRenderer.Description.
+		MusicDescriptionShelfRenderer.Description.Runs.GetText()
 
+	album.IsExplicit = headerRenderer.SubtitleBadge.IsExplicit()
 	album.YearOfRelease = headerRenderer.Subtitle.Runs.GetText(
 		uint8(len(headerRenderer.Subtitle.Runs) - 1),
 	)
-	album.ArtistName = headerRenderer.Subtitle.Runs.GetText(2)
 
-	_, browseId := headerRenderer.Subtitle.Runs.GetNavData(2)
-	album.ArtistChannelId = browseId
+	album.ChannelName = headerRenderer.StraplineTextOne.Runs.GetText(0)
+	_, browseId := headerRenderer.StraplineTextOne.Runs.GetNavData(0)
+	album.ChannelId = browseId
 
 	album.TotalDuration = headerRenderer.SecondSubtitle.Runs.GetText(2)
-	album.SongCount = strings.Split(
+	album.TrackCount = strings.Split(
 		headerRenderer.SecondSubtitle.Runs.GetText(0),
 		" ",
 	)[0]
+
+	album.CoverArt = background.GetThumbnail(2)
 }
 
 type (
-	AlbumSong struct {
-		SongOrVideoId   string `json:"songOrVideoId"`
-		Name            string `json:"name"`
-		ArtistName      string `json:"artistName"`
-		ArtistChannelId string `json:"artistChannelId"`
-		Duration        string `json:"duration"` // from fixedColumns
-		Interactions    string `json:"interactions"`
-		IsExplicit      bool   `json:"isExplicit"`
+	Track struct {
+		Index         int    `json:"index"`
+		SongOrVideoId string `json:"songOrVideoId"`
+		Name          string `json:"name"`
+		Duration      string `json:"duration"` // from fixedColumns
+		IsExplicit    bool   `json:"isExplicit"`
+		// IsDisabled    bool   `json:"isDisabled"`
+		Interactions string `json:"interactions"`
+
+		ChannelName string `json:"channelName"`
+		ChannelId   string `json:"channelId"`
 	}
-	AlbumSongs []AlbumSong
+	Tracks []Track
 )
 
-func (albumSongs *AlbumSongs) ScrapeAndSet(
-	wg *sync.WaitGroup,
-	contents *[]apiRespSectionContent,
-) {
+func (tracks *Tracks) ScrapeAndSet(wg *sync.WaitGroup, contents *[]apiRespSectionContent) {
 	defer wg.Done()
 
-	preAlbumSongs := make(AlbumSongs, 0, len(*contents))
-	*albumSongs = preAlbumSongs
+	*tracks = make(Tracks, 0, len(*contents))
 
 	for _, content := range *contents {
 		contentData := content.MusicResponsiveListItemRenderer
-		albumSong := AlbumSong{
+		track := Track{
 			SongOrVideoId: contentData.PlaylistItemData.VideoID,
 			IsExplicit:    contentData.Badges.IsExplicit(),
 		}
 
+		idx, err := strconv.Atoi(contentData.Index.Runs.GetText(0))
+		if err != nil {
+			idx = -1
+		}
+		track.Index = idx
+
 		for i, fixedColumn := range contentData.FixedColumns {
 			if i == 0 {
-				albumSong.Duration = fixedColumn.
+				track.Duration = fixedColumn.
 					MusicResponsiveListItemFixedColumnRenderer.
 					Text.Runs.GetText()
 				continue
@@ -95,22 +105,22 @@ func (albumSongs *AlbumSongs) ScrapeAndSet(
 
 			switch i {
 			case 0:
-				albumSong.Name = textRuns.GetText()
+				track.Name = textRuns.GetText()
 
 			case 1:
-				albumSong.ArtistName = textRuns.GetText()
+				track.ChannelName = textRuns.GetText()
 
 				pageType, browseId, _ := textRuns.GetNavData(0)
 				if (pageType == utils.MUSIC_PAGE_TYPE_ARTIST) ||
 					(pageType == utils.MUSIC_PAGE_TYPE_USER_CHANNEL) {
-					albumSong.ArtistChannelId = browseId
+					track.ChannelId = browseId
 				}
 
 			case 2:
-				albumSong.Interactions = textRuns.GetText(0)
+				track.Interactions = textRuns.GetText(0)
 			}
 		}
 
-		*albumSongs = append(*albumSongs, albumSong)
+		*tracks = append(*tracks, track)
 	}
 }
