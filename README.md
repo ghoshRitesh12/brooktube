@@ -25,6 +25,6 @@ An unofficial YT Music scraper package made for Brook internals, written in Go.
 >
 > - [x] [Album parser](https://music.youtube.com/playlist?list=OLAK5uy_kkypLq7TlpT3uYdH3MbuHDiF2J3u-BRjc)
 >
-> - [ ] [Playlist parser](https://music.youtube.com/playlist?list=PLtwDCqqblBclwxAvPP0lTN56iWBjshBv7)
+> - [x] [Playlist parser](https://music.youtube.com/playlist?list=PLtwDCqqblBclwxAvPP0lTN56iWBjshBv7)
 >
 > - [ ] Player parser
