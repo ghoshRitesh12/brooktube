@@ -15,12 +15,12 @@ type ScrapedData struct {
 	Description   string `json:"description"`
 	YearOfRelease string `json:"yearOfRelease"`
 
-	TrackCount     string `json:"trackCount"`
-	Interactions   string `json:"interactions"`
-	ListeningHours string `json:"listeningHours"`
+	TrackCount    string `json:"trackCount"`
+	Interactions  string `json:"interactions"`
+	TotalDuration string `json:"totalDuration"`
 
-	ArtistName      string `json:"artistName"`
-	ArtistChannelId string `json:"artistChannelId"`
+	ChannelName string `json:"channelName"`
+	ChannelId   string `json:"channelId"`
 
 	Tracks Tracks `json:"tracks"`
 
@@ -42,12 +42,12 @@ func (playlist *ScrapedData) ScrapeAndSetBasicInfo(wg *sync.WaitGroup, header *a
 		uint8(len(headerRenderer.Subtitle.Runs) - 1),
 	)
 
-	playlist.ArtistName = headerRenderer.StraplineTextOne.Runs.GetText()
+	playlist.ChannelName = headerRenderer.StraplineTextOne.Runs.GetText()
 	_, browseId := headerRenderer.StraplineTextOne.Runs.GetNavData(0)
-	playlist.ArtistChannelId = browseId
+	playlist.ChannelId = browseId
 
 	playlist.Interactions = headerRenderer.SecondSubtitle.Runs.GetText(0)
-	playlist.ListeningHours = headerRenderer.SecondSubtitle.Runs.GetText(4)
+	playlist.TotalDuration = headerRenderer.SecondSubtitle.Runs.GetText(4)
 	playlist.TrackCount = strings.Split(
 		headerRenderer.SecondSubtitle.Runs.GetText(2),
 		" ",
