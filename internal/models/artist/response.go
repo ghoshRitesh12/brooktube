@@ -5,22 +5,28 @@ import (
 	"sync"
 
 	"github.com/ghoshRitesh12/brooktube/internal/constants"
+	"github.com/ghoshRitesh12/brooktube/internal/models"
 	"github.com/ghoshRitesh12/brooktube/internal/models/search"
 	"github.com/ghoshRitesh12/brooktube/internal/utils"
 )
 
 type ScrapedData struct {
-	Name        string `json:"name"`
-	About       string `json:"about"`
-	Views       string `json:"views"`
-	Subscribers string `json:"subscribersCount"`
+	Info struct {
+		Name             string               `json:"name"`
+		About            string               `json:"about"`
+		Views            string               `json:"views"`
+		Subscribers      string               `json:"subscribersCount"`
+		BackgroundImages models.AppThumbnails `json:"backgroundImages,omitempty"`
+		ForegroundImages models.AppThumbnails `json:"foregroundImages,omitempty"`
+	} `json:"info,omitempty"`
 
-	Songs        Songs        `json:"songs,omitempty"`               // section
-	Videos       Videos       `json:"videos,omitempty"`              // section
-	Albums       Albums       `json:"albums,omitempty"`              // section
-	Singles      Singles      `json:"singles,omitempty"`             // section
-	FeaturedOn   FeaturedOn   `json:"featuredOn,omitempty"`          // section
-	AlikeArtists AlikeArtists `json:"alikeArtistsSection,omitempty"` // section
+	Songs        Songs        `json:"songs,omitempty"`        // section
+	Videos       Videos       `json:"videos,omitempty"`       // section
+	Albums       Albums       `json:"albums,omitempty"`       // section
+	Singles      Singles      `json:"singles,omitempty"`      // section
+	FeaturedOns  FeaturedOns  `json:"featuredOns,omitempty"`  // section
+	AlikeArtists AlikeArtists `json:"alikeArtists,omitempty"` // section
+	Playlists    Playlists    `json:"playlists,omitempty"`    // section
 }
 
 // scrapes and sets basic info of the artist
@@ -31,18 +37,32 @@ func (artist *ScrapedData) ScrapeAndSetBasicInfo(
 ) {
 	defer wg.Done()
 
-	artist.Name = header.MusicImmersiveHeaderRenderer.Title.Runs.GetText()
-	artist.About = header.MusicImmersiveHeaderRenderer.Description.Runs.GetText()
-	artist.Subscribers = header.MusicImmersiveHeaderRenderer.
-		SubscriptionButton.SubscribeButtonRenderer.
-		SubscriberCountText.Runs.GetText()
+	// for artists
+	if header.MusicImmersiveHeaderRenderer.Title.Runs.GetText() != "" {
+		artist.Info.Name = header.MusicImmersiveHeaderRenderer.Title.Runs.GetText()
+		artist.Info.About = header.MusicImmersiveHeaderRenderer.Description.Runs.GetText()
+		artist.Info.Subscribers = header.MusicImmersiveHeaderRenderer.
+			SubscriptionButton.SubscribeButtonRenderer.
+			SubscriberCountText.Runs.GetText()
+		artist.Info.BackgroundImages = header.MusicImmersiveHeaderRenderer.
+			Thumbnail.GetAllThumbnails()
+		artist.Info.Views = strings.Split(
+			(*sections)[len(*sections)-1].
+				MusicDescriptionShelfRenderer.Subheader.
+				Runs.GetText(),
+			" ",
+		)[0]
 
-	artist.Views = strings.Split(
-		(*sections)[len(*sections)-1].
-			MusicDescriptionShelfRenderer.Subheader.
-			Runs.GetText(),
-		" ",
-	)[0]
+		return
+	} else if header.MusicImmersiveHeaderRenderer.Title.Runs.GetText() == "" { // for non artists
+		artist.Info.Name = header.MusicVisualHeaderRenderer.Title.Runs.GetText()
+		artist.Info.BackgroundImages = header.MusicVisualHeaderRenderer.
+			Thumbnail.GetAllThumbnails()
+		artist.Info.ForegroundImages = header.MusicVisualHeaderRenderer.
+			ForegroundThumbnail.GetAllThumbnails()
+
+		return
+	}
 }
 
 type Songs struct {
@@ -51,17 +71,19 @@ type Songs struct {
 }
 
 // scrapes songs section data and sets it
-func (songsSection *Songs) ScrapeAndSet(wg *sync.WaitGroup, sections *[]apiRespSectionContent) {
+func (songs *Songs) ScrapeAndSet(wg *sync.WaitGroup, renderer *APIRespMusicShelfRenderer) {
 	defer wg.Done()
-	section := (*sections)[0].MusicShelfRenderer
 
-	if section.Title.Runs.GetText() != "Songs" {
+	if renderer == nil {
+		return
+	}
+	if renderer.Title.Runs.GetText() != "Songs" {
 		return
 	}
 
-	_, browseId := section.Title.Runs.GetNavData(0)
-	songsSection.SeeMorePlaylistId = browseId
-	songsSection.Contents = utils.ParseArtistSongContents(&(section.Contents))
+	_, browseId := renderer.Title.Runs.GetNavData(0)
+	songs.SeeMorePlaylistId = browseId
+	songs.Contents = utils.ParseArtistSongContents(&(renderer.Contents))
 }
 
 type (
@@ -73,35 +95,37 @@ type (
 		} `json:"seeMoreEndpoint"`
 	}
 	album struct {
-		AlbumId  string `json:"albumId"` // browseEndpoint.browseId
-		Title    string `json:"title"`
-		Subtitle string `json:"subtitle"`
+		AlbumId   string               `json:"albumId"` // browseEndpoint.browseId
+		Title     string               `json:"title"`
+		Subtitle  string               `json:"subtitle"`
+		CoverArts models.AppThumbnails `json:"coverArts"`
 	}
 )
 
 // scrapes albums section data and sets it
-func (albumsSection *Albums) ScrapeAndSet(wg *sync.WaitGroup, section *apiRespSectionContent) {
+func (albums *Albums) ScrapeAndSet(wg *sync.WaitGroup, renderer *APIRespMusicCarouselShelfRenderer) {
 	defer wg.Done()
-	if section == nil {
+
+	if renderer == nil {
 		return
 	}
 
-	_, browseId, browseParams := section.MusicCarouselShelfRenderer.
-		Header.MusicCarouselShelfBasicHeaderRenderer.
+	_, browseId, browseParams := renderer.Header.
+		MusicCarouselShelfBasicHeaderRenderer.
 		Title.Runs.GetNavData(0)
-	albumsSection.SeeMoreEndpoint.DiscographyId = browseId
-	albumsSection.SeeMoreEndpoint.Params = browseParams
+	albums.SeeMoreEndpoint.DiscographyId = browseId
+	albums.SeeMoreEndpoint.Params = browseParams
 
-	albumsSection.Contents = make([]album, 0, len(section.MusicCarouselShelfRenderer.Contents))
+	albums.Contents = make([]album, 0, len(renderer.Contents))
 
-	for _, content := range section.MusicCarouselShelfRenderer.Contents {
-		albumsSection.Contents = append(
-			albumsSection.Contents,
+	for _, content := range renderer.Contents {
+		albums.Contents = append(albums.Contents,
 			album{
 				AlbumId: content.MusicTwoRowItemRenderer.
 					NavigationEndpoint.BrowseEndpoint.BrowseID,
-				Title:    content.MusicTwoRowItemRenderer.Title.Runs.GetText(),
-				Subtitle: content.MusicTwoRowItemRenderer.Subtitle.Runs.GetText(),
+				Title:     content.MusicTwoRowItemRenderer.Title.Runs.GetText(),
+				Subtitle:  content.MusicTwoRowItemRenderer.Subtitle.Runs.GetText(),
+				CoverArts: content.MusicTwoRowItemRenderer.ThumbnailRenderer.GetAllThumbnails(),
 			},
 		)
 	}
@@ -117,35 +141,37 @@ type (
 		} `json:"seeMoreEndpoint"`
 	}
 	single struct {
-		AlbumId  string `json:"albumId"` // browseEndpoint.browseId
-		Title    string `json:"title"`
-		Subtitle string `json:"subtitle"`
+		AlbumId    string               `json:"albumId"` // browseEndpoint.browseId
+		Title      string               `json:"title"`
+		Subtitle   string               `json:"subtitle"`
+		Thumbnails models.AppThumbnails `json:"thumbnails"`
 	}
 )
 
 // scrapes singles section data and sets it
-func (singlesSection *Singles) ScrapeAndSet(wg *sync.WaitGroup, section *apiRespSectionContent) {
+func (singles *Singles) ScrapeAndSet(wg *sync.WaitGroup, renderer *APIRespMusicCarouselShelfRenderer) {
 	defer wg.Done()
-	if section == nil {
+
+	if renderer == nil {
 		return
 	}
 
-	_, browseId, browseParams := section.MusicCarouselShelfRenderer.
-		Header.MusicCarouselShelfBasicHeaderRenderer.
+	_, browseId, browseParams := renderer.Header.
+		MusicCarouselShelfBasicHeaderRenderer.
 		Title.Runs.GetNavData(0)
-	singlesSection.SeeMoreEndpoint.DiscographyId = browseId
-	singlesSection.SeeMoreEndpoint.Params = browseParams
+	singles.SeeMoreEndpoint.DiscographyId = browseId
+	singles.SeeMoreEndpoint.Params = browseParams
 
-	singlesSection.Contents = make([]single, 0, len(section.MusicCarouselShelfRenderer.Contents))
+	singles.Contents = make([]single, 0, len(renderer.Contents))
 
-	for _, content := range section.MusicCarouselShelfRenderer.Contents {
-		singlesSection.Contents = append(
-			singlesSection.Contents,
+	for _, content := range renderer.Contents {
+		singles.Contents = append(singles.Contents,
 			single{
 				AlbumId: content.MusicTwoRowItemRenderer.
 					NavigationEndpoint.BrowseEndpoint.BrowseID,
-				Title:    content.MusicTwoRowItemRenderer.Title.Runs.GetText(),
-				Subtitle: content.MusicTwoRowItemRenderer.Subtitle.Runs.GetText(),
+				Title:      content.MusicTwoRowItemRenderer.Title.Runs.GetText(),
+				Subtitle:   content.MusicTwoRowItemRenderer.Subtitle.Runs.GetText(),
+				Thumbnails: content.MusicTwoRowItemRenderer.ThumbnailRenderer.GetAllThumbnails(),
 			},
 		)
 	}
@@ -157,67 +183,71 @@ type (
 		SeeMorePlaylistId string  `json:"seeMorePlaylistId"`
 	}
 	video struct {
-		VideoId  string `json:"videoId"` // watchEndpoint.videoId
-		Title    string `json:"title"`
-		Subtitle string `json:"subtitle"`
+		VideoId    string               `json:"videoId"` // watchEndpoint.videoId
+		Title      string               `json:"title"`
+		Subtitle   string               `json:"subtitle"`
+		Thumbnails models.AppThumbnails `json:"thumbnails"`
 	}
 )
 
 // scrapes videos section data and sets it
-func (videosSection *Videos) ScrapeAndSet(wg *sync.WaitGroup, section *apiRespSectionContent) {
+func (videos *Videos) ScrapeAndSet(wg *sync.WaitGroup, renderer *APIRespMusicCarouselShelfRenderer) {
 	defer wg.Done()
-	if section == nil {
+
+	if renderer == nil {
 		return
 	}
 
-	_, browseId, _ := section.MusicCarouselShelfRenderer.
-		Header.MusicCarouselShelfBasicHeaderRenderer.
+	_, browseId, _ := renderer.Header.
+		MusicCarouselShelfBasicHeaderRenderer.
 		Title.Runs.GetNavData(0)
-	videosSection.SeeMorePlaylistId = browseId
+	videos.SeeMorePlaylistId = browseId
 
-	videosSection.Contents = make([]video, 0, len(section.MusicCarouselShelfRenderer.Contents))
+	videos.Contents = make([]video, 0, len(renderer.Contents))
 
-	for _, content := range section.MusicCarouselShelfRenderer.Contents {
-		videosSection.Contents = append(
-			videosSection.Contents,
+	for _, content := range renderer.Contents {
+		videos.Contents = append(videos.Contents,
 			video{
 				VideoId: content.MusicTwoRowItemRenderer.
 					NavigationEndpoint.WatchEndpoint.VideoID,
-				Title:    content.MusicTwoRowItemRenderer.Title.Runs.GetText(),
-				Subtitle: content.MusicTwoRowItemRenderer.Subtitle.Runs.GetText(),
+				Title:      content.MusicTwoRowItemRenderer.Title.Runs.GetText(),
+				Subtitle:   content.MusicTwoRowItemRenderer.Subtitle.Runs.GetText(),
+				Thumbnails: content.MusicTwoRowItemRenderer.ThumbnailRenderer.GetAllThumbnails(),
 			},
 		)
 	}
 }
 
 type (
-	FeaturedOn struct {
+	FeaturedOns struct {
 		Contents []featuredOn `json:"contents,omitempty"`
 	}
 	featuredOn struct {
-		Title      string `json:"title"`
-		PlaylistId string `json:"playlistId"`
+		Title      string               `json:"title"`
+		PlaylistId string               `json:"playlistId"`
+		Thumbnails models.AppThumbnails `json:"thumbnails"`
 	}
 )
 
 // scrapes featured on section data and sets it
-func (featuredOnSection *FeaturedOn) ScrapeAndSet(wg *sync.WaitGroup, section *apiRespSectionContent) {
+func (featuredOns *FeaturedOns) ScrapeAndSet(wg *sync.WaitGroup, renderer *APIRespMusicCarouselShelfRenderer) {
 	defer wg.Done()
-	if section == nil {
+
+	if renderer == nil {
 		return
 	}
 
-	featuredOnSection.Contents = make([]featuredOn, 0, len(section.MusicCarouselShelfRenderer.Contents))
+	featuredOns.Contents = make([]featuredOn, 0, len(renderer.Contents))
 
-	for _, content := range section.MusicCarouselShelfRenderer.Contents {
+	for _, content := range renderer.Contents {
 		browseEndpoint := content.MusicTwoRowItemRenderer.
 			NavigationEndpoint.BrowseEndpoint
 
-		featuredOnSection.Contents = append(
-			featuredOnSection.Contents,
+		featuredOns.Contents = append(featuredOns.Contents,
 			featuredOn{
 				Title:      content.MusicTwoRowItemRenderer.Title.Runs.GetText(),
 				PlaylistId: browseEndpoint.BrowseID,
+				Thumbnails: content.MusicTwoRowItemRenderer.ThumbnailRenderer.GetAllThumbnails(),
 			},
 		)
 	}
@@ -228,23 +258,25 @@ type (
 		Contents []alikeArtist `json:"contents,omitempty"`
 	}
 	alikeArtist struct {
-		Name        string `json:"name"`
-		ChannelId   string `json:"channelId"`
-		Subscribers string `json:"subscribers"`
+		Name        string               `json:"name"`
+		ChannelId   string               `json:"channelId"`
+		Subscribers string               `json:"subscribers"`
+		Images      models.AppThumbnails `json:"images"`
 	}
 )
 
 // scrapes alike artists section data and sets it
-func (alikeArtistSection *AlikeArtists) ScrapeAndSet(wg *sync.WaitGroup, section *apiRespSectionContent) {
+func (alikeArtists *AlikeArtists) ScrapeAndSet(wg *sync.WaitGroup, renderer *APIRespMusicCarouselShelfRenderer) {
 	defer wg.Done()
-	if section == nil {
+
+	if renderer == nil {
 		return
 	}
 
 	// to pre-allocate memory
-	alikeArtistSection.Contents = make([]alikeArtist, 0, len(section.MusicCarouselShelfRenderer.Contents))
+	alikeArtists.Contents = make([]alikeArtist, 0, len(renderer.Contents))
 
-	for _, content := range section.MusicCarouselShelfRenderer.Contents {
+	for _, content := range renderer.Contents {
 		browseEndpoint := content.MusicTwoRowItemRenderer.
 			NavigationEndpoint.BrowseEndpoint
 
@@ -254,9 +286,9 @@ func (alikeArtistSection *AlikeArtists) ScrapeAndSet(wg *sync.WaitGroup, section
 			PageType != constants.MUSIC_PAGE_TYPE_ARTIST {
 			continue
 		}
+		content.MusicTwoRowItemRenderer.ThumbnailRenderer.GetAllThumbnails()
 
-		alikeArtistSection.Contents = append(
-			alikeArtistSection.Contents,
+		alikeArtists.Contents = append(alikeArtists.Contents,
 			alikeArtist{
 				Name:      content.MusicTwoRowItemRenderer.Title.Runs.GetText(),
 				ChannelId: browseEndpoint.BrowseID,
@@ -264,6 +296,52 @@ func (alikeArtistSection *AlikeArtists) ScrapeAndSet(wg *sync.WaitGroup, section
 					content.MusicTwoRowItemRenderer.Subtitle.Runs.GetText(),
 					" ",
 				)[0],
+				Images: content.MusicTwoRowItemRenderer.ThumbnailRenderer.GetAllThumbnails(),
+			},
+		)
+	}
+}
+
+type (
+	Playlists struct {
+		Contents        []playlist `json:"contents,omitempty"`
+		SeeMoreEndpoint struct {
+			Params        string `json:"params"`
+			DiscographyId string `json:"discographyId"` // somewhat like playlistId
+		} `json:"seeMoreEndpoint"`
+	}
+	playlist struct {
+		PlaylistId string               `json:"albumId"` // browseEndpoint.browseId
+		Title      string               `json:"title"`
+		Subtitle   string               `json:"subtitle"`
+		CoverArts  models.AppThumbnails `json:"coverArts"`
+	}
+)
+
+// scrapes alike artists section data and sets it
+func (playlists *Playlists) ScrapeAndSet(wg *sync.WaitGroup, renderer *APIRespMusicCarouselShelfRenderer) {
+	defer wg.Done()
+
+	if renderer == nil {
+		return
+	}
+
+	_, browseId, browseParams := renderer.Header.
+		MusicCarouselShelfBasicHeaderRenderer.
+		Title.Runs.GetNavData(0)
+	playlists.SeeMoreEndpoint.DiscographyId = browseId
+	playlists.SeeMoreEndpoint.Params = browseParams
+
+	playlists.Contents = make([]playlist, 0, len(renderer.Contents))
+
+	for _, content := range renderer.Contents {
+		playlists.Contents = append(playlists.Contents,
+			playlist{
+				PlaylistId: content.MusicTwoRowItemRenderer.
+					NavigationEndpoint.BrowseEndpoint.BrowseID,
+				Title:     content.MusicTwoRowItemRenderer.Title.Runs.GetText(),
+				Subtitle:  content.MusicTwoRowItemRenderer.Subtitle.Runs.GetText(),
+				CoverArts: content.MusicTwoRowItemRenderer.ThumbnailRenderer.GetAllThumbnails(),
 			},
 		)
 	}
