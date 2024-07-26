@@ -4,9 +4,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/ghoshRitesh12/brooktube/internal/errors"
 	"github.com/ghoshRitesh12/brooktube/internal/models/playlist"
 	"github.com/ghoshRitesh12/brooktube/internal/requests"
-	"github.com/ghoshRitesh12/brooktube/internal/utils"
 )
 
 const PLAYLIST_ID_PREFIX string = "VL"
@@ -14,7 +14,7 @@ const PLAYLIST_SCRAPE_OPERATIONS int = 2
 
 func (p *Scraper) GetPlaylist(playlistId string) (*playlist.ScrapedData, error) {
 	if playlistId == "" {
-		return nil, utils.ErrInvalidPlaylistId
+		return nil, errors.ErrInvalidPlaylistId
 	}
 
 	wg := &sync.WaitGroup{}
@@ -31,18 +31,18 @@ func (p *Scraper) GetPlaylist(playlistId string) (*playlist.ScrapedData, error) 
 
 	tabs := data.Contents.TwoColumnBrowseResultsRenderer.Tabs
 	if len(tabs) == 0 {
-		return nil, utils.ErrPlaylistContentsNotFound
+		return nil, errors.ErrPlaylistContentsNotFound
 	}
 
 	headerContents := tabs[0].TabRenderer.Content.SectionListRenderer.Contents
 	if len(headerContents) < 1 {
-		return nil, utils.ErrPlaylistContentsNotFound
+		return nil, errors.ErrPlaylistContentsNotFound
 	}
 
 	outerContents := data.Contents.TwoColumnBrowseResultsRenderer.
 		SecondaryContents.SectionListRenderer.Contents
 	if len(outerContents) < 1 {
-		return nil, utils.ErrPlaylistContentsNotFound
+		return nil, errors.ErrPlaylistContentsNotFound
 	}
 
 	sections := &(outerContents[0].MusicPlaylistShelfRenderer.Contents)
@@ -75,10 +75,10 @@ func (p *Scraper) GetMorePlaylistTracks(playlistId, continuationToken string) (*
 	tracks := &playlist.Tracks{}
 
 	if playlistId == "" {
-		return nil, utils.ErrInvalidPlaylistId
+		return nil, errors.ErrInvalidPlaylistId
 	}
 	if continuationToken == "" {
-		return nil, utils.ErrInvalidContinuationToken
+		return nil, errors.ErrInvalidContinuationToken
 	}
 
 	if !strings.HasPrefix(playlistId, PLAYLIST_ID_PREFIX) {

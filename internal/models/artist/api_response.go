@@ -119,5 +119,7 @@ type apiRespHeader struct {
 		Description struct {
 			Runs models.BasicRuns
 		} `json:"description,omitempty"`
+
+		Thumbnail models.Thumbnail `json:"thumbnail,omitempty"`
 	} `json:"musicImmersiveHeaderRenderer,omitempty"`
 }

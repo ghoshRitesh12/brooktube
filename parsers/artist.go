@@ -1,13 +1,16 @@
 package parsers
 
 import (
+	"fmt"
 	"sync"
 
+	"github.com/davecgh/go-spew/spew"
+	"github.com/ghoshRitesh12/brooktube/internal/errors"
 	"github.com/ghoshRitesh12/brooktube/internal/models/artist"
 	"github.com/ghoshRitesh12/brooktube/internal/requests"
 )
 
-const ARTIST_SCRAPE_OPERATIONS int = 7
+var ARTIST_SCRAPE_OPERATIONS int = 2
 
 func (p *Scraper) GetArtist(artistChannelID string) (*artist.ScrapedData, error) {
 	wg := &sync.WaitGroup{}
@@ -18,19 +21,36 @@ func (p *Scraper) GetArtist(artistChannelID string) (*artist.ScrapedData, error)
 		return nil, err
 	}
 
-	sections := &data.Contents.SingleColumnBrowseResultsRenderer.
-		Tabs[0].TabRenderer.Content.SectionListRenderer.Contents
+	tabs := &data.Contents.SingleColumnBrowseResultsRenderer.Tabs
+	if len(*tabs) == 0 {
+		return nil, errors.ErrArtistContentNotFound
+	}
 
-	if len(*sections) == 0 {
-		return result, nil
+	sections := (*tabs)[0].TabRenderer.Content.SectionListRenderer.Contents
+	if len(sections) == 0 {
+		return nil, errors.ErrArtistContentNotFound
+	}
+
+	for _, section := range sections {
+		sectionName := artist.SectionName(
+			section.MusicCarouselShelfRenderer.
+				Header.MusicCarouselShelfBasicHeaderRenderer.
+				Title.Runs.GetText(),
+		)
+		if _, ok := artist.VALID_ARTIST_SECTIONS[sectionName]; ok {
+			fmt.Println(sectionName)
+			ARTIST_SCRAPE_OPERATIONS += 1
+		}
 	}
 
 	wg.Add(ARTIST_SCRAPE_OPERATIONS)
 
-	go result.ScrapeAndSetBasicInfo(wg, &data.Header, sections)
-	go result.SongsSection.ScrapeAndSet(wg, sections)
+	spew.Dump(ARTIST_SCRAPE_OPERATIONS)
 
-	for _, section := range *sections {
+	go result.ScrapeAndSetBasicInfo(wg, &data.Header, &sections)
+	go result.Songs.ScrapeAndSet(wg, &sections)
+
+	for _, section := range sections {
 		sectionName := artist.SectionName(
 			section.MusicCarouselShelfRenderer.
 				Header.MusicCarouselShelfBasicHeaderRenderer.
@@ -39,15 +59,15 @@ func (p *Scraper) GetArtist(artistChannelID string) (*artist.ScrapedData, error)
 
 		switch sectionName {
 		case artist.SECTION_ALBUMS:
-			go result.AlbumsSection.ScrapeAndSet(wg, &section)
+			go result.Albums.ScrapeAndSet(wg, &section)
 		case artist.SECTION_SINGLES:
-			go result.SinglesSection.ScrapeAndSet(wg, &section)
+			go result.Singles.ScrapeAndSet(wg, &section)
 		case artist.SECTION_VIDEOS:
-			go result.VideosSection.ScrapeAndSet(wg, &section)
+			go result.Videos.ScrapeAndSet(wg, &section)
 		case artist.SECTION_FEATURED_ON:
-			go result.FeaturedOnSection.ScrapeAndSet(wg, &section)
+			go result.FeaturedOn.ScrapeAndSet(wg, &section)
 		case artist.SECTION_ALIKE_ARTISTS:
-			go result.AlikeArtistsSection.ScrapeAndSet(wg, &section)
+			go result.AlikeArtists.ScrapeAndSet(wg, &section)
 		default:
 			continue
 		}

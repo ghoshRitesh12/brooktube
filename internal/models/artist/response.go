@@ -4,7 +4,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ghoshRitesh12/brooktube/internal/helpers"
+	"github.com/ghoshRitesh12/brooktube/internal/constants"
 	"github.com/ghoshRitesh12/brooktube/internal/models/search"
 	"github.com/ghoshRitesh12/brooktube/internal/utils"
 )
@@ -15,12 +15,12 @@ type ScrapedData struct {
 	Views       string `json:"views"`
 	Subscribers string `json:"subscribersCount"`
 
-	SongsSection        ArtistSongsSection      `json:"songsSection,omitempty"`
-	VideosSection       ArtistVideosSection     `json:"videosSection,omitempty"`
-	AlbumsSection       ArtistAlbumsSection     `json:"albumsSection,omitempty"`
-	SinglesSection      ArtistSinglesSection    `json:"singlesSection,omitempty"`
-	FeaturedOnSection   ArtistFeaturedOnSection `json:"featuredOnSection,omitempty"`
-	AlikeArtistsSection AlikeArtistsSection     `json:"alikeArtistsSection,omitempty"`
+	Songs        Songs        `json:"songs,omitempty"`               // section
+	Videos       Videos       `json:"videos,omitempty"`              // section
+	Albums       Albums       `json:"albums,omitempty"`              // section
+	Singles      Singles      `json:"singles,omitempty"`             // section
+	FeaturedOn   FeaturedOn   `json:"featuredOn,omitempty"`          // section
+	AlikeArtists AlikeArtists `json:"alikeArtistsSection,omitempty"` // section
 }
 
 // scrapes and sets basic info of the artist
@@ -45,16 +45,13 @@ func (artist *ScrapedData) ScrapeAndSetBasicInfo(
 	)[0]
 }
 
-type ArtistSongsSection struct {
+type Songs struct {
 	Contents          search.Songs `json:"contents,omitempty"`
 	SeeMorePlaylistId string       `json:"seeMorePlaylistId"`
 }
 
 // scrapes songs section data and sets it
-func (songsSection *ArtistSongsSection) ScrapeAndSet(
-	wg *sync.WaitGroup,
-	sections *[]apiRespSectionContent,
-) {
+func (songsSection *Songs) ScrapeAndSet(wg *sync.WaitGroup, sections *[]apiRespSectionContent) {
 	defer wg.Done()
 	section := (*sections)[0].MusicShelfRenderer
 
@@ -64,18 +61,18 @@ func (songsSection *ArtistSongsSection) ScrapeAndSet(
 
 	_, browseId := section.Title.Runs.GetNavData(0)
 	songsSection.SeeMorePlaylistId = browseId
-	songsSection.Contents = helpers.ParseArtistSongContents(&(section.Contents))
+	songsSection.Contents = utils.ParseArtistSongContents(&(section.Contents))
 }
 
 type (
-	ArtistAlbumsSection struct {
-		Contents        []artistAlbum `json:"contents,omitempty"`
+	Albums struct {
+		Contents        []album `json:"contents,omitempty"`
 		SeeMoreEndpoint struct {
 			Params        string `json:"params"`
 			DiscographyId string `json:"discographyId"` // somewhat like playlistId
 		} `json:"seeMoreEndpoint"`
 	}
-	artistAlbum struct {
+	album struct {
 		AlbumId  string `json:"albumId"` // browseEndpoint.browseId
 		Title    string `json:"title"`
 		Subtitle string `json:"subtitle"`
@@ -83,10 +80,7 @@ type (
 )
 
 // scrapes albums section data and sets it
-func (albumsSection *ArtistAlbumsSection) ScrapeAndSet(
-	wg *sync.WaitGroup,
-	section *apiRespSectionContent,
-) {
+func (albumsSection *Albums) ScrapeAndSet(wg *sync.WaitGroup, section *apiRespSectionContent) {
 	defer wg.Done()
 	if section == nil {
 		return
@@ -98,12 +92,12 @@ func (albumsSection *ArtistAlbumsSection) ScrapeAndSet(
 	albumsSection.SeeMoreEndpoint.DiscographyId = browseId
 	albumsSection.SeeMoreEndpoint.Params = browseParams
 
-	albumsSection.Contents = make([]artistAlbum, 0, len(section.MusicCarouselShelfRenderer.Contents))
+	albumsSection.Contents = make([]album, 0, len(section.MusicCarouselShelfRenderer.Contents))
 
 	for _, content := range section.MusicCarouselShelfRenderer.Contents {
 		albumsSection.Contents = append(
 			albumsSection.Contents,
-			artistAlbum{
+			album{
 				AlbumId: content.MusicTwoRowItemRenderer.
 					NavigationEndpoint.BrowseEndpoint.BrowseID,
 				Title:    content.MusicTwoRowItemRenderer.Title.Runs.GetText(),
@@ -114,15 +108,15 @@ func (albumsSection *ArtistAlbumsSection) ScrapeAndSet(
 }
 
 type (
-	ArtistSinglesSection struct {
-		Contents []artistSingle `json:"contents,omitempty"`
+	Singles struct {
+		Contents []single `json:"contents,omitempty"`
 
 		SeeMoreEndpoint struct {
 			Params        string `json:"params"`
 			DiscographyId string `json:"discographyId"` // somewhat like playlistId
 		} `json:"seeMoreEndpoint"`
 	}
-	artistSingle struct {
+	single struct {
 		AlbumId  string `json:"albumId"` // browseEndpoint.browseId
 		Title    string `json:"title"`
 		Subtitle string `json:"subtitle"`
@@ -130,10 +124,7 @@ type (
 )
 
 // scrapes singles section data and sets it
-func (singlesSection *ArtistSinglesSection) ScrapeAndSet(
-	wg *sync.WaitGroup,
-	section *apiRespSectionContent,
-) {
+func (singlesSection *Singles) ScrapeAndSet(wg *sync.WaitGroup, section *apiRespSectionContent) {
 	defer wg.Done()
 	if section == nil {
 		return
@@ -145,12 +136,12 @@ func (singlesSection *ArtistSinglesSection) ScrapeAndSet(
 	singlesSection.SeeMoreEndpoint.DiscographyId = browseId
 	singlesSection.SeeMoreEndpoint.Params = browseParams
 
-	singlesSection.Contents = make([]artistSingle, 0, len(section.MusicCarouselShelfRenderer.Contents))
+	singlesSection.Contents = make([]single, 0, len(section.MusicCarouselShelfRenderer.Contents))
 
 	for _, content := range section.MusicCarouselShelfRenderer.Contents {
 		singlesSection.Contents = append(
 			singlesSection.Contents,
-			artistSingle{
+			single{
 				AlbumId: content.MusicTwoRowItemRenderer.
 					NavigationEndpoint.BrowseEndpoint.BrowseID,
 				Title:    content.MusicTwoRowItemRenderer.Title.Runs.GetText(),
@@ -161,11 +152,11 @@ func (singlesSection *ArtistSinglesSection) ScrapeAndSet(
 }
 
 type (
-	ArtistVideosSection struct {
-		Contents          []artistVideo `json:"contents,omitempty"`
-		SeeMorePlaylistId string        `json:"seeMorePlaylistId"`
+	Videos struct {
+		Contents          []video `json:"contents,omitempty"`
+		SeeMorePlaylistId string  `json:"seeMorePlaylistId"`
 	}
-	artistVideo struct {
+	video struct {
 		VideoId  string `json:"videoId"` // watchEndpoint.videoId
 		Title    string `json:"title"`
 		Subtitle string `json:"subtitle"`
@@ -173,10 +164,7 @@ type (
 )
 
 // scrapes videos section data and sets it
-func (videosSection *ArtistVideosSection) ScrapeAndSet(
-	wg *sync.WaitGroup,
-	section *apiRespSectionContent,
-) {
+func (videosSection *Videos) ScrapeAndSet(wg *sync.WaitGroup, section *apiRespSectionContent) {
 	defer wg.Done()
 	if section == nil {
 		return
@@ -187,12 +175,12 @@ func (videosSection *ArtistVideosSection) ScrapeAndSet(
 		Title.Runs.GetNavData(0)
 	videosSection.SeeMorePlaylistId = browseId
 
-	videosSection.Contents = make([]artistVideo, 0, len(section.MusicCarouselShelfRenderer.Contents))
+	videosSection.Contents = make([]video, 0, len(section.MusicCarouselShelfRenderer.Contents))
 
 	for _, content := range section.MusicCarouselShelfRenderer.Contents {
 		videosSection.Contents = append(
 			videosSection.Contents,
-			artistVideo{
+			video{
 				VideoId: content.MusicTwoRowItemRenderer.
 					NavigationEndpoint.WatchEndpoint.VideoID,
 				Title:    content.MusicTwoRowItemRenderer.Title.Runs.GetText(),
@@ -203,26 +191,23 @@ func (videosSection *ArtistVideosSection) ScrapeAndSet(
 }
 
 type (
-	ArtistFeaturedOnSection struct {
-		Contents []artistFeaturedOn `json:"contents,omitempty"`
+	FeaturedOn struct {
+		Contents []featuredOn `json:"contents,omitempty"`
 	}
-	artistFeaturedOn struct {
+	featuredOn struct {
 		Title      string `json:"title"`
 		PlaylistId string `json:"playlistId"`
 	}
 )
 
 // scrapes featured on section data and sets it
-func (featuredOnSection *ArtistFeaturedOnSection) ScrapeAndSet(
-	wg *sync.WaitGroup,
-	section *apiRespSectionContent,
-) {
+func (featuredOnSection *FeaturedOn) ScrapeAndSet(wg *sync.WaitGroup, section *apiRespSectionContent) {
 	defer wg.Done()
 	if section == nil {
 		return
 	}
 
-	featuredOnSection.Contents = make([]artistFeaturedOn, 0, len(section.MusicCarouselShelfRenderer.Contents))
+	featuredOnSection.Contents = make([]featuredOn, 0, len(section.MusicCarouselShelfRenderer.Contents))
 
 	for _, content := range section.MusicCarouselShelfRenderer.Contents {
 		browseEndpoint := content.MusicTwoRowItemRenderer.
@@ -230,7 +215,7 @@ func (featuredOnSection *ArtistFeaturedOnSection) ScrapeAndSet(
 
 		featuredOnSection.Contents = append(
 			featuredOnSection.Contents,
-			artistFeaturedOn{
+			featuredOn{
 				Title:      content.MusicTwoRowItemRenderer.Title.Runs.GetText(),
 				PlaylistId: browseEndpoint.BrowseID,
 			},
@@ -239,7 +224,7 @@ func (featuredOnSection *ArtistFeaturedOnSection) ScrapeAndSet(
 }
 
 type (
-	AlikeArtistsSection struct {
+	AlikeArtists struct {
 		Contents []alikeArtist `json:"contents,omitempty"`
 	}
 	alikeArtist struct {
@@ -250,10 +235,7 @@ type (
 )
 
 // scrapes alike artists section data and sets it
-func (alikeArtistSection *AlikeArtistsSection) ScrapeAndSet(
-	wg *sync.WaitGroup,
-	section *apiRespSectionContent,
-) {
+func (alikeArtistSection *AlikeArtists) ScrapeAndSet(wg *sync.WaitGroup, section *apiRespSectionContent) {
 	defer wg.Done()
 	if section == nil {
 		return
@@ -269,7 +251,7 @@ func (alikeArtistSection *AlikeArtistsSection) ScrapeAndSet(
 		if browseEndpoint.
 			BrowseEndpointContextSupportedConfigs.
 			BrowseEndpointContextMusicConfig.
-			PageType != utils.MUSIC_PAGE_TYPE_ARTIST {
+			PageType != constants.MUSIC_PAGE_TYPE_ARTIST {
 			continue
 		}
 

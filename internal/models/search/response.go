@@ -3,7 +3,7 @@ package search
 import (
 	"strings"
 
-	"github.com/ghoshRitesh12/brooktube/internal/utils"
+	"github.com/ghoshRitesh12/brooktube/internal/constants"
 )
 
 type ScrapedData struct {
@@ -25,14 +25,15 @@ type ResultContent struct {
 
 type (
 	SongOrVideo struct {
-		SongOrVideoId   string `json:"songOrVideoId"`
-		Name            string `json:"name"`
-		AlbumName       string `json:"albumName"`
-		AlbumId         string `json:"albumId"`
-		ArtistName      string `json:"artistName"`
-		ArtistChannelId string `json:"artistChannelId"`
-		Duration        string `json:"duration"`
-		Interactions    string `json:"interactions"`
+		SongOrVideoId string `json:"songOrVideoId"`
+		Name          string `json:"name"`
+		AlbumName     string `json:"albumName"`
+		AlbumId       string `json:"albumId"`
+		Duration      string `json:"duration"`
+		Interactions  string `json:"interactions"`
+
+		ChannelName string `json:"channelName"`
+		ChannelId   string `json:"channelId"`
 	}
 	Songs []SongOrVideo
 )
@@ -58,16 +59,16 @@ func (songs *Songs) ScrapeAndSet(
 			}
 
 			if i == 1 {
-				songOrVideo.ArtistName = textRuns.GetText(0)
+				songOrVideo.ChannelName = textRuns.GetText(0)
 				songOrVideo.AlbumName = textRuns.GetText(2)
 
 				pageType, browseId, _ := flexColumn.
 					MusicResponsiveListItemFlexColumnRenderer.
 					Text.Runs.GetNavData(0)
 
-				if (pageType == utils.MUSIC_PAGE_TYPE_ARTIST) ||
-					(pageType == utils.MUSIC_PAGE_TYPE_USER_CHANNEL) {
-					songOrVideo.ArtistChannelId = browseId
+				if (pageType == constants.MUSIC_PAGE_TYPE_ARTIST) ||
+					(pageType == constants.MUSIC_PAGE_TYPE_USER_CHANNEL) {
+					songOrVideo.ChannelId = browseId
 				}
 
 				{
@@ -75,7 +76,7 @@ func (songs *Songs) ScrapeAndSet(
 						MusicResponsiveListItemFlexColumnRenderer.
 						Text.Runs.GetNavData(2)
 
-					if pageType == utils.MUSIC_PAGE_TYPE_ALBUM {
+					if pageType == constants.MUSIC_PAGE_TYPE_ALBUM {
 						songOrVideo.AlbumId = browseId
 					}
 				}
@@ -114,15 +115,15 @@ func (videos *Videos) ScrapeAndSet(
 			}
 
 			if i == 1 {
-				songOrVideo.ArtistName = textRuns.GetText(0)
+				songOrVideo.ChannelName = textRuns.GetText(0)
 
 				pageType, browseId, _ := flexColumn.
 					MusicResponsiveListItemFlexColumnRenderer.
 					Text.Runs.GetNavData(0)
 
-				if (pageType == utils.MUSIC_PAGE_TYPE_ARTIST) ||
-					(pageType == utils.MUSIC_PAGE_TYPE_USER_CHANNEL) {
-					songOrVideo.ArtistChannelId = browseId
+				if (pageType == constants.MUSIC_PAGE_TYPE_ARTIST) ||
+					(pageType == constants.MUSIC_PAGE_TYPE_USER_CHANNEL) {
+					songOrVideo.ChannelId = browseId
 				}
 
 				songOrVideo.Duration = textRuns.GetText(uint8(len(textRuns) - 1))
@@ -180,7 +181,7 @@ func (artists *Artists) ScrapeAndSet(
 		if browseEndpoint.
 			BrowseEndpointContextSupportedConfigs.
 			BrowseEndpointContextMusicConfig.
-			PageType == utils.MUSIC_PAGE_TYPE_ARTIST {
+			PageType == constants.MUSIC_PAGE_TYPE_ARTIST {
 			artist.ChannelId = browseEndpoint.BrowseID
 		}
 
@@ -199,9 +200,7 @@ type (
 	Albums []Album
 )
 
-func (albums *Albums) ScrapeAndSet(
-	shelfContents []APIRespSectionContent,
-) {
+func (albums *Albums) ScrapeAndSet(shelfContents []APIRespSectionContent) {
 	preArtists := make(Albums, 0, len(shelfContents))
 	*albums = preArtists
 
@@ -224,7 +223,7 @@ func (albums *Albums) ScrapeAndSet(
 				MusicResponsiveListItemFlexColumnRenderer.
 				Text.Runs.GetNavData(2)
 
-			if pageType == utils.MUSIC_PAGE_TYPE_ARTIST {
+			if pageType == constants.MUSIC_PAGE_TYPE_ARTIST {
 				album.ArtistChannelId = browseId
 			}
 
@@ -234,7 +233,7 @@ func (albums *Albums) ScrapeAndSet(
 		album.OtherInfo = otherInfoBuilder.String()
 		album.ArtistName = strings.Split(
 			album.OtherInfo,
-			utils.OTHER_INFO_SEPARATOR,
+			constants.OTHER_INFO_SEPARATOR,
 		)[1]
 
 		*albums = append(*albums, album)
@@ -253,9 +252,7 @@ type (
 	CommunityPlaylists []CommunityPlaylist
 )
 
-func (communityPlaylists *CommunityPlaylists) ScrapeAndSet(
-	shelfContents []APIRespSectionContent,
-) {
+func (communityPlaylists *CommunityPlaylists) ScrapeAndSet(shelfContents []APIRespSectionContent) {
 	preCommunityPlaylists := make(CommunityPlaylists, 0, len(shelfContents))
 	*communityPlaylists = preCommunityPlaylists
 
@@ -288,7 +285,7 @@ func (communityPlaylists *CommunityPlaylists) ScrapeAndSet(
 		if playlistBrowseEndpoint.
 			BrowseEndpointContextSupportedConfigs.
 			BrowseEndpointContextMusicConfig.
-			PageType == utils.MUSIC_PAGE_TYPE_PLAYLIST {
+			PageType == constants.MUSIC_PAGE_TYPE_PLAYLIST {
 			communityPlaylist.PlaylistId = playlistBrowseEndpoint.BrowseID
 		}
 

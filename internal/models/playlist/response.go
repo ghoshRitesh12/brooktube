@@ -4,8 +4,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/ghoshRitesh12/brooktube/internal/constants"
 	"github.com/ghoshRitesh12/brooktube/internal/models"
-	"github.com/ghoshRitesh12/brooktube/internal/utils"
 )
 
 type ScrapedData struct {
@@ -109,8 +109,8 @@ func (tracks *Tracks) ScrapeAndSet(wg *sync.WaitGroup, contents *[]apiRespSectio
 				playlistTrack.ChannelName = textRuns.GetText()
 
 				pageType, browseId, _ := textRuns.GetNavData(0)
-				if (pageType == utils.MUSIC_PAGE_TYPE_ARTIST) ||
-					(pageType == utils.MUSIC_PAGE_TYPE_USER_CHANNEL) {
+				if (pageType == constants.MUSIC_PAGE_TYPE_ARTIST) ||
+					(pageType == constants.MUSIC_PAGE_TYPE_USER_CHANNEL) {
 					playlistTrack.ChannelId = browseId
 				}
 

@@ -6,15 +6,16 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/ghoshRitesh12/brooktube/internal/constants"
 	"github.com/ghoshRitesh12/brooktube/internal/utils"
 )
 
 var defaultHeaders = map[string]string{
 	"Accept":       "*/*",
-	"Origin":       utils.HOST,
-	"Referer":      utils.HOST + "/",
+	"Origin":       constants.HOST,
+	"Referer":      constants.HOST + "/",
 	"Content-Type": "application/json",
-	"User-Agent":   utils.USER_AGENT_HEADER,
+	"User-Agent":   constants.USER_AGENT_HEADER,
 }
 
 func fetch[T any](method string, reqUrl string, reqBody map[string]any, reqHeaders map[string]string) (T, error) {
@@ -52,7 +53,7 @@ func fetch[T any](method string, reqUrl string, reqBody map[string]any, reqHeade
 	}
 
 	queryParams := req.URL.Query()
-	queryParams.Set("key", utils.GOOG_API_KEY)
+	queryParams.Set("key", constants.GOOG_API_KEY)
 	queryParams.Set("alt", "json")
 
 	req.URL.RawQuery = queryParams.Encode()

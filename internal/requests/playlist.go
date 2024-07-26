@@ -3,27 +3,28 @@ package requests
 import (
 	"net/url"
 
-	"github.com/ghoshRitesh12/brooktube/internal/helpers"
+	"github.com/ghoshRitesh12/brooktube/internal/constants"
+	"github.com/ghoshRitesh12/brooktube/internal/errors"
 	"github.com/ghoshRitesh12/brooktube/internal/models/playlist"
 	"github.com/ghoshRitesh12/brooktube/internal/utils"
 )
 
 func FetchPlaylist(playlistId string) (*playlist.APIResp, error) {
 	method := "POST"
-	reqURL, err := url.Parse(utils.HOST + utils.BROWSE_PATH)
+	reqURL, err := url.Parse(constants.HOST + constants.BROWSE_PATH)
 	if err != nil {
 		return nil, err
 	}
 
-	body := helpers.NewBrowserEndpointContext(utils.MUSIC_PAGE_TYPE_PLAYLIST, playlistId)
+	body := utils.NewBrowserEndpointContext(constants.MUSIC_PAGE_TYPE_PLAYLIST, playlistId)
 	queryParams := reqURL.Query()
 
 	queryParams.Set("prettyPrint", "false")
 	reqURL.RawQuery = queryParams.Encode()
 
 	headers := map[string]string{
-		"X-Goog-Visitor-Id":        utils.GOOG_VISITOR_ID,
-		"X-Youtube-Client-Version": utils.CLIENT_VERSION,
+		"X-Goog-Visitor-Id":        constants.GOOG_VISITOR_ID,
+		"X-Youtube-Client-Version": constants.CLIENT_VERSION,
 	}
 
 	data, err := fetch[playlist.APIResp](method, reqURL.String(), body, headers)
@@ -36,13 +37,13 @@ func FetchPlaylist(playlistId string) (*playlist.APIResp, error) {
 
 func FetchMorePlaylistTracks(playlistId, continuationToken string) (*playlist.APIRespContinuation, error) {
 	method := "POST"
-	reqURL, err := url.Parse(utils.HOST + utils.BROWSE_PATH)
+	reqURL, err := url.Parse(constants.HOST + constants.BROWSE_PATH)
 	if err != nil {
 		return nil, err
 	}
 
 	if continuationToken == "" {
-		return nil, utils.ErrInvalidContinuationToken
+		return nil, errors.ErrInvalidContinuationToken
 	}
 
 	body := map[string]any{}
@@ -58,8 +59,8 @@ func FetchMorePlaylistTracks(playlistId, continuationToken string) (*playlist.AP
 	reqURL.RawQuery = queryParams.Encode()
 
 	headers := map[string]string{
-		"X-Goog-Visitor-Id":        utils.GOOG_VISITOR_ID,
-		"X-Youtube-Client-Version": utils.CLIENT_VERSION,
+		"X-Goog-Visitor-Id":        constants.GOOG_VISITOR_ID,
+		"X-Youtube-Client-Version": constants.CLIENT_VERSION,
 	}
 
 	data, err := fetch[playlist.APIRespContinuation](method, reqURL.String(), body, headers)

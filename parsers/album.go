@@ -4,7 +4,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ghoshRitesh12/brooktube/internal/helpers"
+	"github.com/ghoshRitesh12/brooktube/internal/errors"
 	"github.com/ghoshRitesh12/brooktube/internal/models/album"
 	"github.com/ghoshRitesh12/brooktube/internal/requests"
 	"github.com/ghoshRitesh12/brooktube/internal/utils"
@@ -15,7 +15,7 @@ const ALBUM_BROWSE_ID_PREFIX string = "MPREb_"
 
 func (p *Scraper) GetAlbum(albumId string) (*album.ScrapedData, error) {
 	if albumId == "" {
-		return nil, utils.ErrInvalidAlbumBrowseId
+		return nil, errors.ErrInvalidAlbumBrowseId
 	}
 
 	albumBrowseId := ""
@@ -25,7 +25,7 @@ func (p *Scraper) GetAlbum(albumId string) (*album.ScrapedData, error) {
 	if strings.HasPrefix(albumId, ALBUM_BROWSE_ID_PREFIX) {
 		albumBrowseId = albumId
 	} else {
-		browseId, err := helpers.GetAlbumBrowseId(albumId)
+		browseId, err := utils.GetAlbumBrowseId(albumId)
 		if err != nil {
 			return nil, err
 		}
@@ -33,7 +33,7 @@ func (p *Scraper) GetAlbum(albumId string) (*album.ScrapedData, error) {
 	}
 
 	if albumBrowseId == "" {
-		return nil, utils.ErrInvalidAlbumBrowseId
+		return nil, errors.ErrInvalidAlbumBrowseId
 	}
 
 	data, err := requests.FetchAlbum(albumBrowseId)
@@ -45,18 +45,18 @@ func (p *Scraper) GetAlbum(albumId string) (*album.ScrapedData, error) {
 
 	tabs := data.Contents.TwoColumnBrowseResultsRenderer.Tabs
 	if len(tabs) == 0 {
-		return nil, utils.ErrAlbumContentsNotFound
+		return nil, errors.ErrAlbumContentsNotFound
 	}
 
 	headerContents := tabs[0].TabRenderer.Content.SectionListRenderer.Contents
 	if len(headerContents) < 1 {
-		return nil, utils.ErrAlbumContentsNotFound
+		return nil, errors.ErrAlbumContentsNotFound
 	}
 
 	outerContents := data.Contents.TwoColumnBrowseResultsRenderer.
 		SecondaryContents.SectionListRenderer.Contents
 	if len(outerContents) < 1 {
-		return nil, utils.ErrAlbumContentsNotFound
+		return nil, errors.ErrAlbumContentsNotFound
 	}
 
 	sections := &(outerContents[0].MusicShelfRenderer.Contents)

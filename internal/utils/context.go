@@ -1,5 +1,7 @@
 package utils
 
+import "github.com/ghoshRitesh12/brooktube/internal/constants"
+
 type YtMusicClient struct {
 	HL            string `json:"hl"`
 	Platform      string `json:"platform"`
@@ -17,13 +19,13 @@ type YtMusicContext struct {
 func NewYtMusicContext() *YtMusicContext {
 	return &YtMusicContext{
 		Client: YtMusicClient{
-			HL:            HL,
-			Platform:      PLATFORM,
-			TimeZone:      TIME_ZONE,
-			ClientName:    CLIENT_NAME,
-			ClientVersion: CLIENT_VERSION,
-			VisitorData:   GOOG_VISITOR_ID,
-			UserAgent:     USER_AGENT_HEADER,
+			HL:            constants.HL,
+			Platform:      constants.PLATFORM,
+			TimeZone:      constants.TIME_ZONE,
+			ClientName:    constants.CLIENT_NAME,
+			ClientVersion: constants.CLIENT_VERSION,
+			VisitorData:   constants.GOOG_VISITOR_ID,
+			UserAgent:     constants.USER_AGENT_HEADER,
 		},
 	}
 }

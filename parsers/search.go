@@ -1,9 +1,9 @@
 package parsers
 
 import (
-	"github.com/ghoshRitesh12/brooktube/internal/helpers"
 	"github.com/ghoshRitesh12/brooktube/internal/models/search"
 	"github.com/ghoshRitesh12/brooktube/internal/requests"
+	"github.com/ghoshRitesh12/brooktube/internal/utils"
 )
 
 type SearchParserParams struct {
@@ -30,7 +30,7 @@ func (p *Scraper) GetSearchResults(query string, params SearchParserParams) (*se
 	if params.ContinuationToken != "" {
 		section := data.ContinuationContents.MusicShelfContinuation
 		result.ContinuationToken = section.Continuations.GetContinuationToken()
-		result.Content = helpers.ParseSearchContent(params.Category, section.Contents)
+		result.Content = utils.ParseSearchContent(params.Category, section.Contents)
 
 		return result, nil
 	}
@@ -45,7 +45,7 @@ func (p *Scraper) GetSearchResults(query string, params SearchParserParams) (*se
 	section := sections[0]
 	result.Title = section.MusicShelfRenderer.Title.Runs.GetText()
 	result.ContinuationToken = section.MusicShelfRenderer.Continuations.GetContinuationToken()
-	result.Content = helpers.ParseSearchContent(params.Category, section.MusicShelfRenderer.Contents)
+	result.Content = utils.ParseSearchContent(params.Category, section.MusicShelfRenderer.Contents)
 
 	return result, nil
 }
