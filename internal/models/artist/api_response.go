@@ -27,15 +27,15 @@ type APIResp struct {
 
 type apiRespSectionContent struct {
 	// for songs
-	MusicShelfRenderer apiRespMusicShelfRenderer `json:"musicShelfRenderer,omitempty"`
+	MusicShelfRenderer APIRespMusicShelfRenderer `json:"musicShelfRenderer,omitempty"`
 	// for albums, singles, videos, featured on & alike artists
-	MusicCarouselShelfRenderer apiRespMusicCarouselShelfRenderer `json:"musicCarouselShelfRenderer,omitempty"`
+	MusicCarouselShelfRenderer APIRespMusicCarouselShelfRenderer `json:"musicCarouselShelfRenderer,omitempty"`
 	// for album views
-	MusicDescriptionShelfRenderer apiRespMusicDescriptionSection `json:"musicDescriptionShelfRenderer,omitempty"`
+	MusicDescriptionShelfRenderer apiRespMusicDescriptionShelfRenderer `json:"musicDescriptionShelfRenderer,omitempty"`
 }
 
 // for songs
-type apiRespMusicShelfRenderer struct {
+type APIRespMusicShelfRenderer struct {
 	Title struct {
 		Runs models.NavigationEndpointRuns `json:"runs,omitempty"`
 	} `json:"title,omitempty"`
@@ -44,7 +44,7 @@ type apiRespMusicShelfRenderer struct {
 }
 
 // for albums, singles, videos, featured on & alike artists
-type apiRespMusicCarouselShelfRenderer struct {
+type APIRespMusicCarouselShelfRenderer struct {
 	Header struct {
 		MusicCarouselShelfBasicHeaderRenderer struct {
 			Title struct {
@@ -86,23 +86,23 @@ type apiRespMusicCarouselShelfRenderer struct {
 						} `json:"watchEndpointMusicConfig,omitempty"`
 					} `json:"watchEndpointMusicSupportedConfigs,omitempty"`
 				} `json:"watchEndpoint,omitempty"`
-				//
 			} `json:"navigationEndpoint,omitempty"`
-			//
+
+			ThumbnailRenderer models.Thumbnail `json:"thumbnailRenderer,omitempty"`
 		} `json:"musicTwoRowItemRenderer,omitempty"`
 	} `json:"contents,omitempty"`
 }
 
 // for album views
-type apiRespMusicDescriptionSection struct {
+type apiRespMusicDescriptionShelfRenderer struct {
 	Subheader struct {
-		// views
-		Runs models.BasicRuns `json:"runs,omitempty"`
+		Runs models.BasicRuns `json:"runs,omitempty"` // views
 	} `json:"subheader,omitempty"`
 }
 
 // for meta data of the album
 type apiRespHeader struct {
+	// for artists
 	MusicImmersiveHeaderRenderer struct {
 		Title struct {
 			Runs models.BasicRuns
@@ -122,4 +122,26 @@ type apiRespHeader struct {
 
 		Thumbnail models.Thumbnail `json:"thumbnail,omitempty"`
 	} `json:"musicImmersiveHeaderRenderer,omitempty"`
+
+	// for non artists
+	MusicVisualHeaderRenderer struct {
+		Title struct {
+			Runs models.BasicRuns
+		} `json:"title,omitempty"`
+
+		SubscriptionButton struct {
+			SubscribeButtonRenderer struct {
+				SubscriberCountText struct {
+					Runs models.BasicRuns
+				} `json:"subscriberCountText,omitempty"`
+			} `json:"subscribeButtonRenderer,omitempty"`
+		} `json:"subscriptionButton,omitempty"`
+
+		Description struct {
+			Runs models.BasicRuns
+		} `json:"description,omitempty"`
+
+		Thumbnail           models.Thumbnail `json:"thumbnail,omitempty"`
+		ForegroundThumbnail models.Thumbnail `json:"foregroundThumbnail,omitempty"`
+	} `json:"musicVisualHeaderRenderer,omitempty"`
 }
