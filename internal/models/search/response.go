@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/ghoshRitesh12/brooktube/internal/constants"
+	"github.com/ghoshRitesh12/brooktube/internal/models"
 )
 
 type ScrapedData struct {
@@ -34,6 +35,8 @@ type (
 
 		ChannelName string `json:"channelName"`
 		ChannelId   string `json:"channelId"`
+
+		Thumbnails models.AppThumbnails `json:"thumbnails"`
 	}
 	Songs []SongOrVideo
 )
