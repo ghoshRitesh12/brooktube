@@ -1,16 +1,14 @@
 package parsers
 
 import (
-	"fmt"
 	"sync"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/ghoshRitesh12/brooktube/internal/errors"
 	"github.com/ghoshRitesh12/brooktube/internal/models/artist"
 	"github.com/ghoshRitesh12/brooktube/internal/requests"
 )
 
-var ARTIST_SCRAPE_OPERATIONS int = 2
+var ARTIST_SCRAPE_OPERATIONS int = 1
 
 func (p *Scraper) GetArtist(artistChannelID string) (*artist.ScrapedData, error) {
 	wg := &sync.WaitGroup{}
@@ -32,42 +30,45 @@ func (p *Scraper) GetArtist(artistChannelID string) (*artist.ScrapedData, error)
 	}
 
 	for _, section := range sections {
-		sectionName := artist.SectionName(
-			section.MusicCarouselShelfRenderer.
-				Header.MusicCarouselShelfBasicHeaderRenderer.
-				Title.Runs.GetText(),
-		)
-		if _, ok := artist.VALID_ARTIST_SECTIONS[sectionName]; ok {
-			fmt.Println(sectionName)
+		if len(section.MusicCarouselShelfRenderer.Contents) > 0 || len(section.MusicShelfRenderer.Contents) > 0 {
 			ARTIST_SCRAPE_OPERATIONS += 1
 		}
 	}
 
 	wg.Add(ARTIST_SCRAPE_OPERATIONS)
 
-	spew.Dump(ARTIST_SCRAPE_OPERATIONS)
-
 	go result.ScrapeAndSetBasicInfo(wg, &data.Header, &sections)
-	go result.Songs.ScrapeAndSet(wg, &sections)
 
 	for _, section := range sections {
-		sectionName := artist.SectionName(
-			section.MusicCarouselShelfRenderer.
-				Header.MusicCarouselShelfBasicHeaderRenderer.
-				Title.Runs.GetText(),
-		)
+		sectionName := artist.SectionName("")
+
+		if len(section.MusicCarouselShelfRenderer.Contents) > 0 {
+			sectionName = artist.SectionName(
+				section.MusicCarouselShelfRenderer.
+					Header.MusicCarouselShelfBasicHeaderRenderer.
+					Title.Runs.GetText(),
+			)
+		} else if len(section.MusicShelfRenderer.Contents) > 0 {
+			sectionName = artist.SectionName(
+				section.MusicShelfRenderer.Title.Runs.GetText(),
+			)
+		}
 
 		switch sectionName {
+		case artist.SECTION_SONGS:
+			go result.Songs.ScrapeAndSet(wg, &section.MusicShelfRenderer)
 		case artist.SECTION_ALBUMS:
-			go result.Albums.ScrapeAndSet(wg, &section)
+			go result.Albums.ScrapeAndSet(wg, &section.MusicCarouselShelfRenderer)
 		case artist.SECTION_SINGLES:
-			go result.Singles.ScrapeAndSet(wg, &section)
+			go result.Singles.ScrapeAndSet(wg, &section.MusicCarouselShelfRenderer)
 		case artist.SECTION_VIDEOS:
-			go result.Videos.ScrapeAndSet(wg, &section)
+			go result.Videos.ScrapeAndSet(wg, &section.MusicCarouselShelfRenderer)
 		case artist.SECTION_FEATURED_ON:
-			go result.FeaturedOn.ScrapeAndSet(wg, &section)
+			go result.FeaturedOns.ScrapeAndSet(wg, &section.MusicCarouselShelfRenderer)
 		case artist.SECTION_ALIKE_ARTISTS:
-			go result.AlikeArtists.ScrapeAndSet(wg, &section)
+			go result.AlikeArtists.ScrapeAndSet(wg, &section.MusicCarouselShelfRenderer)
+		case artist.SECTION_PLAYLISTS:
+			go result.Playlists.ScrapeAndSet(wg, &section.MusicCarouselShelfRenderer)
 		default:
 			continue
 		}
