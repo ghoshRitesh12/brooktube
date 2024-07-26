@@ -9,11 +9,11 @@ import (
 )
 
 type ScrapedData struct {
-	Title         string `json:"title"`
-	Subtitle      string `json:"subtitle"`
-	CoverArt      string `json:"coverArt"`
-	Description   string `json:"description"`
-	YearOfRelease string `json:"yearOfRelease"`
+	Title         string               `json:"title"`
+	Subtitle      string               `json:"subtitle"`
+	Description   string               `json:"description"`
+	YearOfRelease string               `json:"yearOfRelease"`
+	CoverArts     models.AppThumbnails `json:"coverArts"`
 
 	TrackCount    string `json:"trackCount"`
 	Interactions  string `json:"interactions"`
@@ -24,7 +24,7 @@ type ScrapedData struct {
 
 	Tracks Tracks `json:"tracks"`
 
-	ContinuationTokens []string `json:"continuationToken"`
+	ContinuationTokens []string `json:"continuationTokens"`
 }
 
 // scrapes and sets basic info of the playlist
@@ -53,17 +53,17 @@ func (playlist *ScrapedData) ScrapeAndSetBasicInfo(wg *sync.WaitGroup, header *a
 		" ",
 	)[0]
 
-	playlist.CoverArt = background.GetThumbnail(0)
+	playlist.CoverArts = background.GetAllThumbnails()
 }
 
 type (
 	Track struct {
-		SongOrVideoId string `json:"songOrVideoId"`
-		Name          string `json:"name"`
-		Duration      string `json:"duration"` // from fixedColumns
-		Thumbnail     string `json:"thumbnail"`
-		IsExplicit    bool   `json:"isExplicit"`
-		IsDisabled    bool   `json:"isDisabled"`
+		SongOrVideoId string               `json:"songOrVideoId"`
+		Name          string               `json:"name"`
+		Duration      string               `json:"duration"` // from fixedColumns
+		IsExplicit    bool                 `json:"isExplicit"`
+		IsDisabled    bool                 `json:"isDisabled"`
+		Thumbnails    models.AppThumbnails `json:"thumbnails"`
 
 		ChannelName string `json:"channelName"`
 		ChannelId   string `json:"channelId"`
@@ -84,7 +84,7 @@ func (tracks *Tracks) ScrapeAndSet(wg *sync.WaitGroup, contents *[]apiRespSectio
 			SongOrVideoId: contentData.PlaylistItemData.VideoID,
 			IsExplicit:    contentData.Badges.IsExplicit(),
 			IsDisabled:    contentData.MusicItemRendererDisplayPolicy.IsDisabled(),
-			Thumbnail:     contentData.Thumbnail.GetThumbnail(0),
+			Thumbnails:    contentData.Thumbnail.GetAllThumbnails(),
 		}
 
 		for i, fixedColumn := range contentData.FixedColumns {
