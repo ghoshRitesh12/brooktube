@@ -44,25 +44,29 @@ func (displayPolicy DisplayPolicy) IsDisabled() bool {
 type Thumbnail struct {
 	MusicThumbnailRenderer struct {
 		Thumbnail struct {
-			Thumbnails []struct {
-				URL    string `json:"url,omitempty"`
-				Width  int    `json:"width,omitempty"`
-				Height int    `json:"height,omitempty"`
-			} `json:"thumbnails,omitempty"`
+			Thumbnails AppThumbnails `json:"thumbnails,omitempty"`
 		} `json:"thumbnail,omitempty"`
 	} `json:"musicThumbnailRenderer,omitempty"`
 }
 
 func (thmbnl *Thumbnail) GetThumbnail(index uint8) string {
 	url := ""
+	defaultIndex := 0
 	thumbnails := thmbnl.MusicThumbnailRenderer.Thumbnail.Thumbnails
 
 	if len(thumbnails) == 0 {
 		return url
 	}
+
 	if len(thumbnails) > 0 && int(index) < len(thumbnails) {
 		url = thumbnails[index].URL
+	} else if len(thumbnails) > 0 && int(index) > len(thumbnails) {
+		url = thumbnails[defaultIndex].URL
 	}
 
 	return url
+}
+
+func (thmbnl *Thumbnail) GetAllThumbnails() AppThumbnails {
+	return thmbnl.MusicThumbnailRenderer.Thumbnail.Thumbnails
 }
