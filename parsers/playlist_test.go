@@ -26,7 +26,7 @@ func TestGetPlaylist(t *testing.T) {
 			assert.NoError(t, err)
 			assert.NotNil(t, playlist)
 
-			t.Log(playlist.CoverArt)
+			t.Logf("\n%#v\n\n", playlist.CoverArts)
 
 			t.Run("continuation content", func(t *testing.T) {
 				if i == 0 {
