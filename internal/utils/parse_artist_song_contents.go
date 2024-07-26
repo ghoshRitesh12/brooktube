@@ -13,6 +13,7 @@ func ParseArtistSongContents(shelfContents *[]search.APIRespSectionContent) []se
 			SongOrVideoId: content.
 				MusicResponsiveListItemRenderer.
 				PlaylistItemData.VideoId,
+			Thumbnails: content.MusicResponsiveListItemRenderer.Thumbnail.GetAllThumbnails(),
 		}
 
 		for i, flexColumn := range content.MusicResponsiveListItemRenderer.FlexColumns {
