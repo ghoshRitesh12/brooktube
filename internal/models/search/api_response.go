@@ -74,6 +74,8 @@ type APIRespSectionContent struct {
 		} `json:"playlistItemData,omitempty"`
 
 		NavigationEndpoint apiRespNavigationEndpoint `json:"navigationEndpoint,omitempty"`
+
+		Thumbnail models.Thumbnail `json:"thumbnail,omitempty"`
 	} `json:"musicResponsiveListItemRenderer"`
 }
 
