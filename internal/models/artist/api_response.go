@@ -30,7 +30,7 @@ type apiRespSectionContent struct {
 	MusicShelfRenderer APIRespMusicShelfRenderer `json:"musicShelfRenderer,omitempty"`
 	// for albums, singles, videos, featured on & alike artists
 	MusicCarouselShelfRenderer APIRespMusicCarouselShelfRenderer `json:"musicCarouselShelfRenderer,omitempty"`
-	// for album views
+	// for artist views
 	MusicDescriptionShelfRenderer apiRespMusicDescriptionShelfRenderer `json:"musicDescriptionShelfRenderer,omitempty"`
 }
 
