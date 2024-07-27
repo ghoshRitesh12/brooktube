@@ -5,13 +5,12 @@ import (
 	"github.com/ghoshRitesh12/brooktube/internal/models/search"
 )
 
-func ParseArtistSongContents(shelfContents *[]search.APIRespSectionContent) []search.SongOrVideo {
-	songOrVideos := make([]search.SongOrVideo, 0, len(*shelfContents))
+func ParseArtistSongContents(shelfContents *[]search.APIRespSectionContent) []search.Song {
+	songs := make([]search.Song, 0, len(*shelfContents))
 
 	for _, content := range *shelfContents {
-		songOrVideo := search.SongOrVideo{
-			SongOrVideoId: content.
-				MusicResponsiveListItemRenderer.
+		song := search.Song{
+			VideoId: content.MusicResponsiveListItemRenderer.
 				PlaylistItemData.VideoId,
 			Thumbnails: content.MusicResponsiveListItemRenderer.Thumbnail.GetAllThumbnails(),
 		}
@@ -23,38 +22,38 @@ func ParseArtistSongContents(shelfContents *[]search.APIRespSectionContent) []se
 
 			switch i {
 			case 0:
-				songOrVideo.Name = textRuns.GetText()
+				song.Name = textRuns.GetText()
 
 			case 1:
-				songOrVideo.ChannelName = textRuns.GetText(0)
+				song.ChannelName = textRuns.GetText(0)
 
 				pageType, browseId, _ := flexColumn.
 					MusicResponsiveListItemFlexColumnRenderer.
 					Text.Runs.GetNavData(0)
 
 				if pageType == constants.MUSIC_PAGE_TYPE_ARTIST {
-					songOrVideo.ChannelId = browseId
+					song.ChannelId = browseId
 				}
 
 			case 2:
-				songOrVideo.Interactions = textRuns.GetText(0)
+				song.Interactions = textRuns.GetText(0)
 
 			case 3:
 				innerTextRuns := flexColumn.
 					MusicResponsiveListItemFlexColumnRenderer.
 					Text.Runs
 
-				songOrVideo.AlbumName = innerTextRuns.GetText(0)
+				song.AlbumName = innerTextRuns.GetText(0)
 
 				pageType, browseId, _ := innerTextRuns.GetNavData(0)
 				if pageType == constants.MUSIC_PAGE_TYPE_ALBUM {
-					songOrVideo.AlbumId = browseId
+					song.AlbumId = browseId
 				}
 			}
 		}
 
-		songOrVideos = append(songOrVideos, songOrVideo)
+		songs = append(songs, song)
 	}
 
-	return songOrVideos
+	return songs
 }
