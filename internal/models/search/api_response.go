@@ -5,26 +5,22 @@ import "github.com/ghoshRitesh12/brooktube/internal/models"
 type APIResp struct {
 	Contents struct {
 		TabbedSearchResultsRenderer struct {
-			Tabs []struct {
+			Tabs [1]struct {
 				TabRenderer struct {
 					Content struct {
 						SectionListRenderer struct {
 							// for normal search results
-							Contents []apiRespSection `json:"contents"`
+							Contents [1]apiRespSection `json:"contents"`
 						} `json:"sectionListRenderer"`
 					} `json:"content"`
 				} `json:"tabRenderer"`
 			} `json:"tabs"`
 		} `json:"tabbedSearchResultsRenderer"`
 	} `json:"contents,omitempty"`
-
-	// for paginated search results
-	ContinuationContents apiRespSectionContinuation `json:"continuationContents,omitempty"`
 }
 
-// for normal search results
+// for community playlists, songs, albums, videos, etc.
 type apiRespSection struct {
-	// for community playlists, songs, albums, videos, etc.
 	MusicShelfRenderer struct {
 		Title struct {
 			Runs models.BasicRuns `json:"runs"`
@@ -33,15 +29,6 @@ type apiRespSection struct {
 		Contents      []APIRespSectionContent `json:"contents"`
 		Continuations models.Continuations    `json:"continuations,omitempty"`
 	} `json:"musicShelfRenderer,omitempty"`
-}
-
-// for paginated search results
-type apiRespSectionContinuation struct {
-	// for community playlists, songs, albums, videos, etc.
-	MusicShelfContinuation struct {
-		Contents      []APIRespSectionContent `json:"contents"`
-		Continuations models.Continuations    `json:"continuations,omitempty"`
-	} `json:"musicShelfContinuation,omitempty"`
 }
 
 type APIRespSectionContent struct {
@@ -87,12 +74,6 @@ type ApiRespFlexColumns struct {
 	} `json:"musicResponsiveListItemFlexColumnRenderer"`
 }
 
-type APIRespContinuation struct {
-	NextContinuationData struct {
-		Continuation string `json:"continuation"`
-	} `json:"nextContinuationData"`
-}
-
 type apiRespNavigationEndpoint struct {
 	WatchEndpoint struct {
 		VideoID string `json:"videoId,omitempty"`
@@ -107,4 +88,18 @@ type apiRespNavigationEndpoint struct {
 			} `json:"browseEndpointContextMusicConfig,omitempty"`
 		} `json:"browseEndpointContextSupportedConfigs,omitempty"`
 	} `json:"browseEndpoint,omitempty"`
+}
+
+type APIRespContinuation struct {
+	// for continuation data
+	ContinuationContents continuationContents `json:"continuationContents,omitempty"`
+}
+
+// for paginated search results
+type continuationContents struct {
+	// for community playlists, songs, albums, videos, etc.
+	MusicShelfContinuation struct {
+		Contents      []APIRespSectionContent `json:"contents"`
+		Continuations models.Continuations    `json:"continuations,omitempty"`
+	} `json:"musicShelfContinuation,omitempty"`
 }
