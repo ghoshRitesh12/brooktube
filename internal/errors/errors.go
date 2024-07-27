@@ -17,3 +17,8 @@ var (
 var ErrArtistContentNotFound = errors.New("artist_parser: artist content not found")
 
 var ErrInvalidContinuationToken = errors.New("continued_content: invalid continuation token")
+
+var (
+	ErrSearchResultsNotFound = errors.New("search_parser: search results not found")
+	ErrInvalidSearchCategory = errors.New("search_parser: invalid or unsupported search category")
+)
