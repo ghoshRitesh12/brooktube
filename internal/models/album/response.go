@@ -57,11 +57,11 @@ func (album *ScrapedData) ScrapeAndSetBasicInfo(wg *sync.WaitGroup, header *apiR
 
 type (
 	Track struct {
-		Index         int    `json:"index"`
-		SongOrVideoId string `json:"songOrVideoId"`
-		Name          string `json:"name"`
-		Duration      string `json:"duration"` // from fixedColumns
-		IsExplicit    bool   `json:"isExplicit"`
+		Index      int    `json:"index"`
+		VideoId    string `json:"videoId"`
+		Name       string `json:"name"`
+		Duration   string `json:"duration"` // from fixedColumns
+		IsExplicit bool   `json:"isExplicit"`
 		// IsDisabled    bool   `json:"isDisabled"`
 		Interactions string `json:"interactions"`
 
@@ -79,8 +79,8 @@ func (tracks *Tracks) ScrapeAndSet(wg *sync.WaitGroup, contents *[]apiRespSectio
 	for _, content := range *contents {
 		contentData := content.MusicResponsiveListItemRenderer
 		track := Track{
-			SongOrVideoId: contentData.PlaylistItemData.VideoID,
-			IsExplicit:    contentData.Badges.IsExplicit(),
+			VideoId:    contentData.PlaylistItemData.VideoID,
+			IsExplicit: contentData.Badges.IsExplicit(),
 		}
 
 		idx, err := strconv.Atoi(contentData.Index.Runs.GetText(0))

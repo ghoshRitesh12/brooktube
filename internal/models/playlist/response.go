@@ -58,12 +58,12 @@ func (playlist *ScrapedData) ScrapeAndSetBasicInfo(wg *sync.WaitGroup, header *a
 
 type (
 	Track struct {
-		SongOrVideoId string               `json:"songOrVideoId"`
-		Name          string               `json:"name"`
-		Duration      string               `json:"duration"` // from fixedColumns
-		IsExplicit    bool                 `json:"isExplicit"`
-		IsDisabled    bool                 `json:"isDisabled"`
-		Thumbnails    models.AppThumbnails `json:"thumbnails"`
+		VideoId    string               `json:"videoId"`
+		Name       string               `json:"name"`
+		Duration   string               `json:"duration"` // from fixedColumns
+		IsExplicit bool                 `json:"isExplicit"`
+		IsDisabled bool                 `json:"isDisabled"`
+		Thumbnails models.AppThumbnails `json:"thumbnails"`
 
 		ChannelName string `json:"channelName"`
 		ChannelId   string `json:"channelId"`
@@ -81,10 +81,10 @@ func (tracks *Tracks) ScrapeAndSet(wg *sync.WaitGroup, contents *[]apiRespSectio
 	for _, content := range *contents {
 		contentData := content.MusicResponsiveListItemRenderer
 		playlistTrack := Track{
-			SongOrVideoId: contentData.PlaylistItemData.VideoID,
-			IsExplicit:    contentData.Badges.IsExplicit(),
-			IsDisabled:    contentData.MusicItemRendererDisplayPolicy.IsDisabled(),
-			Thumbnails:    contentData.Thumbnail.GetAllThumbnails(),
+			VideoId:    contentData.PlaylistItemData.VideoID,
+			IsExplicit: contentData.Badges.IsExplicit(),
+			IsDisabled: contentData.MusicItemRendererDisplayPolicy.IsDisabled(),
+			Thumbnails: contentData.Thumbnail.GetAllThumbnails(),
 		}
 
 		for i, fixedColumn := range contentData.FixedColumns {
