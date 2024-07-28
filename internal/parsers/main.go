@@ -1,9 +1,9 @@
 package parsers
 
 // namespace containing all search parsers
-type Search struct{}
+type SearchScraper struct{}
 
 type Scraper struct {
 	// namespace containing all search parsers
-	Search Search
+	Search SearchScraper
 }
