@@ -7,7 +7,7 @@ import (
 )
 
 // {query} is the song search query
-func (_search) GetSongResults(query string) (*search.ScrapedSongResult, error) {
+func (s *Search) GetSongResults(query string) (*search.ScrapedSongResult, error) {
 	result := &search.ScrapedSongResult{}
 	return getSearchResults(query, result, &result.Contents)
 }
@@ -15,13 +15,13 @@ func (_search) GetSongResults(query string) (*search.ScrapedSongResult, error) {
 // {query} is the song search query
 //
 // {continuationToken} is the token used for fetching paginated data
-func (_search) GetNextSongResults(query, continuationToken string) (*search.ScrapedSongResult, error) {
+func (s *Search) GetNextSongResults(query, continuationToken string) (*search.ScrapedSongResult, error) {
 	result := &search.ScrapedSongResult{}
 	return getNextSearchResults(query, continuationToken, result, &result.Contents)
 }
 
 // {query} is the video search query
-func (_search) GetVideoResults(query string) (*search.ScrapedVideoResult, error) {
+func (s *Search) GetVideoResults(query string) (*search.ScrapedVideoResult, error) {
 	result := &search.ScrapedVideoResult{}
 	return getSearchResults(query, result, &result.Contents)
 }
@@ -29,13 +29,13 @@ func (_search) GetVideoResults(query string) (*search.ScrapedVideoResult, error)
 // {query} is the video search query
 //
 // {continuationToken} is the token used for fetching paginated data
-func (_search) GetNextVideoResults(query, continuationToken string) (*search.ScrapedVideoResult, error) {
+func (s *Search) GetNextVideoResults(query, continuationToken string) (*search.ScrapedVideoResult, error) {
 	result := &search.ScrapedVideoResult{}
 	return getNextSearchResults(query, continuationToken, result, &result.Contents)
 }
 
 // {query} is the artist search query
-func (_search) GetArtistResults(query string) (*search.ScrapedArtistResult, error) {
+func (s *Search) GetArtistResults(query string) (*search.ScrapedArtistResult, error) {
 	result := &search.ScrapedArtistResult{}
 	return getSearchResults(query, result, &result.Contents)
 }
@@ -43,13 +43,13 @@ func (_search) GetArtistResults(query string) (*search.ScrapedArtistResult, erro
 // {query} is the artist search query
 //
 // {continuationToken} is the token used for fetching paginated data
-func (_search) GetNextArtistResults(query, continuationToken string) (*search.ScrapedArtistResult, error) {
+func (s *Search) GetNextArtistResults(query, continuationToken string) (*search.ScrapedArtistResult, error) {
 	result := &search.ScrapedArtistResult{}
 	return getNextSearchResults(query, continuationToken, result, &result.Contents)
 }
 
 // {query} is the album search query
-func (_search) GetAlbumResults(query string) (*search.ScrapedAlbumResult, error) {
+func (s *Search) GetAlbumResults(query string) (*search.ScrapedAlbumResult, error) {
 	result := &search.ScrapedAlbumResult{}
 	return getSearchResults(query, result, &result.Contents)
 }
@@ -57,13 +57,13 @@ func (_search) GetAlbumResults(query string) (*search.ScrapedAlbumResult, error)
 // {query} is the album search query
 //
 // {continuationToken} is the token used for fetching paginated data
-func (_search) GetNextAlbumResults(query, continuationToken string) (*search.ScrapedAlbumResult, error) {
+func (s *Search) GetNextAlbumResults(query, continuationToken string) (*search.ScrapedAlbumResult, error) {
 	result := &search.ScrapedAlbumResult{}
 	return getNextSearchResults(query, continuationToken, result, &result.Contents)
 }
 
 // {query} is the community playlist search query
-func (_search) GetCommunityPlaylistResults(query string) (*search.ScrapedCommunityPlaylistResult, error) {
+func (s *Search) GetCommunityPlaylistResults(query string) (*search.ScrapedCommunityPlaylistResult, error) {
 	result := &search.ScrapedCommunityPlaylistResult{}
 	return getSearchResults(query, result, &result.Contents)
 }
@@ -71,13 +71,13 @@ func (_search) GetCommunityPlaylistResults(query string) (*search.ScrapedCommuni
 // {query} is the community playlist search query
 //
 // {continuationToken} is the token used for fetching paginated data
-func (_search) GetNextCommunityPlaylistResults(query, continuationToken string) (*search.ScrapedCommunityPlaylistResult, error) {
+func (s *Search) GetNextCommunityPlaylistResults(query, continuationToken string) (*search.ScrapedCommunityPlaylistResult, error) {
 	result := &search.ScrapedCommunityPlaylistResult{}
 	return getNextSearchResults(query, continuationToken, result, &result.Contents)
 }
 
 // {query} is the featured playlist search query
-func (_search) GetFeaturedPlaylistResults(query string) (*search.ScrapedFeaturedPlaylistResult, error) {
+func (s *Search) GetFeaturedPlaylistResults(query string) (*search.ScrapedFeaturedPlaylistResult, error) {
 	result := &search.ScrapedFeaturedPlaylistResult{}
 	return getSearchResults(query, result, &result.Contents)
 }
@@ -85,7 +85,7 @@ func (_search) GetFeaturedPlaylistResults(query string) (*search.ScrapedFeatured
 // {query} is the featured playlist search query
 //
 // {continuationToken} is the token used for fetching paginated data
-func (_search) GetNextFeaturedPlaylistResults(query, continuationToken string) (*search.ScrapedFeaturedPlaylistResult, error) {
+func (s *Search) GetNextFeaturedPlaylistResults(query, continuationToken string) (*search.ScrapedFeaturedPlaylistResult, error) {
 	result := &search.ScrapedFeaturedPlaylistResult{}
 	return getNextSearchResults(query, continuationToken, result, &result.Contents)
 }

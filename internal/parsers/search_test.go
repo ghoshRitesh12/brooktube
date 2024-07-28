@@ -6,12 +6,16 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/ghoshRitesh12/brooktube"
 	"github.com/ghoshRitesh12/brooktube/internal/models/search"
+	"github.com/ghoshRitesh12/brooktube/internal/parsers"
 	"github.com/stretchr/testify/assert"
 )
 
 // go test -run TestGetSearchResults ./parsers -v -count=1
 func TestGetSearchResults(t *testing.T) {
 	innertube := brooktube.New()
+
+	srch := parsers.Search{}
+	srch.GetAlbumResults("bruh that is the coold")
 
 	testsTable := []struct {
 		query    string
