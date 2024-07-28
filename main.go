@@ -6,6 +6,7 @@ type scraper struct {
 	parsers.Scraper
 }
 
+// initialize a new scraper
 func New() *scraper {
 	return &scraper{}
 }
