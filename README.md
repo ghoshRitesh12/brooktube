@@ -15,7 +15,9 @@
 
 </div>
 
-An unofficial YT Music scraper package made for Brook internals, written in Go.
+An unofficial YT Music scraper package made for [Brook](https://github.com/ghoshRitesh12/brook) internals.
+
+Checkout the scraper documentation [here](https://pkg.go.dev/github.com/ghoshRitesh12/brooktube/internal/parsers#section-documentation).
 
 > There are going to be somewhat like 5 parsers:
 >
