@@ -2,7 +2,6 @@ package parsers
 
 import (
 	"strings"
-	"sync"
 
 	"github.com/ghoshRitesh12/brooktube/internal/errors"
 	"github.com/ghoshRitesh12/brooktube/internal/models/album"
@@ -10,7 +9,6 @@ import (
 	"github.com/ghoshRitesh12/brooktube/internal/utils"
 )
 
-const ALBUM_SCRAPE_OPERATIONS int = 2
 const ALBUM_BROWSE_ID_PREFIX string = "MPREb_"
 
 func (p *Scraper) GetAlbum(albumId string) (*album.ScrapedData, error) {
@@ -19,7 +17,6 @@ func (p *Scraper) GetAlbum(albumId string) (*album.ScrapedData, error) {
 	}
 
 	albumBrowseId := ""
-	wg := &sync.WaitGroup{}
 	result := &album.ScrapedData{}
 
 	if strings.HasPrefix(albumId, ALBUM_BROWSE_ID_PREFIX) {
@@ -64,12 +61,8 @@ func (p *Scraper) GetAlbum(albumId string) (*album.ScrapedData, error) {
 		return result, nil
 	}
 
-	wg.Add(ALBUM_SCRAPE_OPERATIONS)
-
-	go result.ScrapeAndSetBasicInfo(wg, &headerContents[0], &data.Background)
-	go result.Tracks.ScrapeAndSet(wg, sections)
-
-	wg.Wait()
+	result.ScrapeAndSetBasicInfo(&headerContents[0], &data.Background)
+	result.Tracks.ScrapeAndSet(sections)
 
 	return result, nil
 }

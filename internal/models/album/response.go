@@ -3,7 +3,6 @@ package album
 import (
 	"strconv"
 	"strings"
-	"sync"
 
 	"github.com/ghoshRitesh12/brooktube/internal/constants"
 	"github.com/ghoshRitesh12/brooktube/internal/models"
@@ -27,9 +26,7 @@ type ScrapedData struct {
 }
 
 // scrapes and sets basic info of the album
-func (album *ScrapedData) ScrapeAndSetBasicInfo(wg *sync.WaitGroup, header *apiRespHeader, background *models.Thumbnail) {
-	defer wg.Done()
-
+func (album *ScrapedData) ScrapeAndSetBasicInfo(header *apiRespHeader, background *models.Thumbnail) {
 	headerRenderer := header.MusicResponsiveHeaderRenderer
 
 	album.Title = headerRenderer.Title.Runs.GetText()
@@ -71,9 +68,7 @@ type (
 	Tracks []Track
 )
 
-func (tracks *Tracks) ScrapeAndSet(wg *sync.WaitGroup, contents *[]apiRespSectionContent) {
-	defer wg.Done()
-
+func (tracks *Tracks) ScrapeAndSet(contents *[]apiRespSectionContent) {
 	*tracks = make(Tracks, 0, len(*contents))
 
 	for _, content := range *contents {

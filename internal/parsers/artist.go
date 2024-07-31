@@ -1,17 +1,12 @@
 package parsers
 
 import (
-	"sync"
-
 	"github.com/ghoshRitesh12/brooktube/internal/errors"
 	"github.com/ghoshRitesh12/brooktube/internal/models/artist"
 	"github.com/ghoshRitesh12/brooktube/internal/requests"
 )
 
-var ARTIST_SCRAPE_OPERATIONS int = 1
-
 func (p *Scraper) GetArtist(artistChannelID string) (*artist.ScrapedData, error) {
-	wg := &sync.WaitGroup{}
 	result := &artist.ScrapedData{}
 
 	data, err := requests.FetchArtist(artistChannelID)
@@ -29,15 +24,7 @@ func (p *Scraper) GetArtist(artistChannelID string) (*artist.ScrapedData, error)
 		return nil, errors.ErrArtistContentNotFound
 	}
 
-	for _, section := range sections {
-		if len(section.MusicCarouselShelfRenderer.Contents) > 0 || len(section.MusicShelfRenderer.Contents) > 0 {
-			ARTIST_SCRAPE_OPERATIONS += 1
-		}
-	}
-
-	wg.Add(ARTIST_SCRAPE_OPERATIONS)
-
-	go result.ScrapeAndSetBasicInfo(wg, &data.Header, &sections)
+	result.ScrapeAndSetBasicInfo(&data.Header, &sections)
 
 	for _, section := range sections {
 		sectionName := artist.SectionName("")
@@ -56,25 +43,23 @@ func (p *Scraper) GetArtist(artistChannelID string) (*artist.ScrapedData, error)
 
 		switch sectionName {
 		case artist.SECTION_SONGS:
-			go result.Songs.ScrapeAndSet(wg, &section.MusicShelfRenderer)
+			result.Songs.ScrapeAndSet(&section.MusicShelfRenderer)
 		case artist.SECTION_ALBUMS:
-			go result.Albums.ScrapeAndSet(wg, &section.MusicCarouselShelfRenderer)
+			result.Albums.ScrapeAndSet(&section.MusicCarouselShelfRenderer)
 		case artist.SECTION_SINGLES:
-			go result.Singles.ScrapeAndSet(wg, &section.MusicCarouselShelfRenderer)
+			result.Singles.ScrapeAndSet(&section.MusicCarouselShelfRenderer)
 		case artist.SECTION_VIDEOS:
-			go result.Videos.ScrapeAndSet(wg, &section.MusicCarouselShelfRenderer)
+			result.Videos.ScrapeAndSet(&section.MusicCarouselShelfRenderer)
 		case artist.SECTION_FEATURED_ON:
-			go result.FeaturedOns.ScrapeAndSet(wg, &section.MusicCarouselShelfRenderer)
+			result.FeaturedOns.ScrapeAndSet(&section.MusicCarouselShelfRenderer)
 		case artist.SECTION_ALIKE_ARTISTS:
-			go result.AlikeArtists.ScrapeAndSet(wg, &section.MusicCarouselShelfRenderer)
+			result.AlikeArtists.ScrapeAndSet(&section.MusicCarouselShelfRenderer)
 		case artist.SECTION_PLAYLISTS:
-			go result.Playlists.ScrapeAndSet(wg, &section.MusicCarouselShelfRenderer)
+			result.Playlists.ScrapeAndSet(&section.MusicCarouselShelfRenderer)
 		default:
 			continue
 		}
 	}
-
-	wg.Wait()
 
 	return result, nil
 }
