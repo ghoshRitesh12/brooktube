@@ -8,8 +8,6 @@ import (
 	"github.com/ghoshRitesh12/brooktube/internal/requests"
 )
 
-var ARTIST_SCRAPE_OPERATIONS int = 1
-
 func (p *Scraper) GetArtist(artistChannelID string) (*artist.ScrapedData, error) {
 	wg := &sync.WaitGroup{}
 	result := &artist.ScrapedData{}
@@ -29,14 +27,7 @@ func (p *Scraper) GetArtist(artistChannelID string) (*artist.ScrapedData, error)
 		return nil, errors.ErrArtistContentNotFound
 	}
 
-	for _, section := range sections {
-		if len(section.MusicCarouselShelfRenderer.Contents) > 0 || len(section.MusicShelfRenderer.Contents) > 0 {
-			ARTIST_SCRAPE_OPERATIONS += 1
-		}
-	}
-
-	wg.Add(ARTIST_SCRAPE_OPERATIONS)
-
+	wg.Add(1)
 	go result.ScrapeAndSetBasicInfo(wg, &data.Header, &sections)
 
 	for _, section := range sections {
@@ -54,6 +45,7 @@ func (p *Scraper) GetArtist(artistChannelID string) (*artist.ScrapedData, error)
 			)
 		}
 
+		wg.Add(1) // assume a case will match
 		switch sectionName {
 		case artist.SECTION_SONGS:
 			go result.Songs.ScrapeAndSet(wg, &section.MusicShelfRenderer)
@@ -70,6 +62,7 @@ func (p *Scraper) GetArtist(artistChannelID string) (*artist.ScrapedData, error)
 		case artist.SECTION_PLAYLISTS:
 			go result.Playlists.ScrapeAndSet(wg, &section.MusicCarouselShelfRenderer)
 		default:
+			wg.Add(-1) // revert the assumption above the switch
 			continue
 		}
 	}
