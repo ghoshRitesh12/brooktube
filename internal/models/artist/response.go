@@ -2,7 +2,6 @@ package artist
 
 import (
 	"strings"
-	"sync"
 
 	"github.com/ghoshRitesh12/brooktube/internal/constants"
 	"github.com/ghoshRitesh12/brooktube/internal/models"
@@ -31,12 +30,9 @@ type ScrapedData struct {
 
 // scrapes and sets basic info of the artist
 func (artist *ScrapedData) ScrapeAndSetBasicInfo(
-	wg *sync.WaitGroup,
 	header *apiRespHeader,
 	sections *[]apiRespSectionContent,
 ) {
-	defer wg.Done()
-
 	// for artists
 	if header.MusicImmersiveHeaderRenderer.Title.Runs.GetText() != "" {
 		artist.Info.Name = header.MusicImmersiveHeaderRenderer.Title.Runs.GetText()
@@ -71,9 +67,7 @@ type Songs struct {
 }
 
 // scrapes songs section data and sets it
-func (songs *Songs) ScrapeAndSet(wg *sync.WaitGroup, renderer *APIRespMusicShelfRenderer) {
-	defer wg.Done()
-
+func (songs *Songs) ScrapeAndSet(renderer *APIRespMusicShelfRenderer) {
 	if renderer == nil {
 		return
 	}
@@ -103,9 +97,7 @@ type (
 )
 
 // scrapes albums section data and sets it
-func (albums *Albums) ScrapeAndSet(wg *sync.WaitGroup, renderer *APIRespMusicCarouselShelfRenderer) {
-	defer wg.Done()
-
+func (albums *Albums) ScrapeAndSet(renderer *APIRespMusicCarouselShelfRenderer) {
 	if renderer == nil {
 		return
 	}
@@ -149,9 +141,7 @@ type (
 )
 
 // scrapes singles section data and sets it
-func (singles *Singles) ScrapeAndSet(wg *sync.WaitGroup, renderer *APIRespMusicCarouselShelfRenderer) {
-	defer wg.Done()
-
+func (singles *Singles) ScrapeAndSet(renderer *APIRespMusicCarouselShelfRenderer) {
 	if renderer == nil {
 		return
 	}
@@ -191,9 +181,7 @@ type (
 )
 
 // scrapes videos section data and sets it
-func (videos *Videos) ScrapeAndSet(wg *sync.WaitGroup, renderer *APIRespMusicCarouselShelfRenderer) {
-	defer wg.Done()
-
+func (videos *Videos) ScrapeAndSet(renderer *APIRespMusicCarouselShelfRenderer) {
 	if renderer == nil {
 		return
 	}
@@ -230,9 +218,7 @@ type (
 )
 
 // scrapes featured on section data and sets it
-func (featuredOns *FeaturedOns) ScrapeAndSet(wg *sync.WaitGroup, renderer *APIRespMusicCarouselShelfRenderer) {
-	defer wg.Done()
-
+func (featuredOns *FeaturedOns) ScrapeAndSet(renderer *APIRespMusicCarouselShelfRenderer) {
 	if renderer == nil {
 		return
 	}
@@ -266,9 +252,7 @@ type (
 )
 
 // scrapes alike artists section data and sets it
-func (alikeArtists *AlikeArtists) ScrapeAndSet(wg *sync.WaitGroup, renderer *APIRespMusicCarouselShelfRenderer) {
-	defer wg.Done()
-
+func (alikeArtists *AlikeArtists) ScrapeAndSet(renderer *APIRespMusicCarouselShelfRenderer) {
 	if renderer == nil {
 		return
 	}
@@ -319,9 +303,7 @@ type (
 )
 
 // scrapes alike artists section data and sets it
-func (playlists *Playlists) ScrapeAndSet(wg *sync.WaitGroup, renderer *APIRespMusicCarouselShelfRenderer) {
-	defer wg.Done()
-
+func (playlists *Playlists) ScrapeAndSet(renderer *APIRespMusicCarouselShelfRenderer) {
 	if renderer == nil {
 		return
 	}

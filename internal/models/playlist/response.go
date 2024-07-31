@@ -2,7 +2,6 @@ package playlist
 
 import (
 	"strings"
-	"sync"
 
 	"github.com/ghoshRitesh12/brooktube/internal/constants"
 	"github.com/ghoshRitesh12/brooktube/internal/models"
@@ -28,9 +27,7 @@ type ScrapedData struct {
 }
 
 // scrapes and sets basic info of the playlist
-func (playlist *ScrapedData) ScrapeAndSetBasicInfo(wg *sync.WaitGroup, header *apiRespHeader, background *models.Thumbnail) {
-	defer wg.Done()
-
+func (playlist *ScrapedData) ScrapeAndSetBasicInfo(header *apiRespHeader, background *models.Thumbnail) {
 	headerRenderer := header.MusicResponsiveHeaderRenderer
 
 	playlist.Title = headerRenderer.Title.Runs.GetText()
@@ -71,11 +68,7 @@ type (
 	Tracks []Track
 )
 
-func (tracks *Tracks) ScrapeAndSet(wg *sync.WaitGroup, contents *[]apiRespSectionContent) {
-	if wg != nil {
-		defer wg.Done()
-	}
-
+func (tracks *Tracks) ScrapeAndSet(contents *[]apiRespSectionContent) {
 	*tracks = make(Tracks, 0, len(*contents))
 
 	for _, content := range *contents {

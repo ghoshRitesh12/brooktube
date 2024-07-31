@@ -2,7 +2,6 @@ package parsers
 
 import (
 	"strings"
-	"sync"
 
 	"github.com/ghoshRitesh12/brooktube/internal/errors"
 	"github.com/ghoshRitesh12/brooktube/internal/models/playlist"
@@ -10,14 +9,12 @@ import (
 )
 
 const PLAYLIST_ID_PREFIX string = "VL"
-const PLAYLIST_SCRAPE_OPERATIONS int = 2
 
 func (p *Scraper) GetPlaylist(playlistId string) (*playlist.ScrapedData, error) {
 	if playlistId == "" {
 		return nil, errors.ErrInvalidPlaylistId
 	}
 
-	wg := &sync.WaitGroup{}
 	result := &playlist.ScrapedData{}
 
 	if !strings.HasPrefix(playlistId, PLAYLIST_ID_PREFIX) {
@@ -60,12 +57,8 @@ func (p *Scraper) GetPlaylist(playlistId string) (*playlist.ScrapedData, error) 
 			Continuations.GetContinuationToken(),
 	)
 
-	wg.Add(PLAYLIST_SCRAPE_OPERATIONS)
-
-	go result.ScrapeAndSetBasicInfo(wg, &headerContents[0], &data.Background)
-	go result.Tracks.ScrapeAndSet(wg, sections)
-
-	wg.Wait()
+	result.ScrapeAndSetBasicInfo(&headerContents[0], &data.Background)
+	result.Tracks.ScrapeAndSet(sections)
 
 	return result, nil
 }
@@ -97,7 +90,7 @@ func (p *Scraper) GetMorePlaylistTracks(playlistId, continuationToken string) (*
 		return tracks, nil
 	}
 
-	tracks.ScrapeAndSet(nil, contents)
+	tracks.ScrapeAndSet(contents)
 
 	return tracks, nil
 }
