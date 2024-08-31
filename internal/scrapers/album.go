@@ -1,4 +1,4 @@
-package parsers
+package scrapers
 
 import (
 	"strings"
@@ -9,9 +9,9 @@ import (
 	"github.com/ghoshRitesh12/brooktube/internal/utils"
 )
 
-const ALBUM_BROWSE_ID_PREFIX string = "MPREb_"
-
 func (p *Scraper) GetAlbum(albumId string) (*album.ScrapedData, error) {
+	const ALBUM_BROWSE_ID_PREFIX string = "MPREb_"
+
 	if albumId == "" {
 		return nil, errors.ErrInvalidAlbumBrowseId
 	}

@@ -1,4 +1,4 @@
-package parsers
+package scrapers
 
 import (
 	"github.com/ghoshRitesh12/brooktube/internal/errors"

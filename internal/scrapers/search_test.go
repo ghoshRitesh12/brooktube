@@ -1,4 +1,4 @@
-package parsers_test
+package scrapers_test
 
 import (
 	"testing"
@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// go test -run TestGetSearchResults ./parsers -v -count=1
+// go test -run TestGetSearchResults ./internal/scrapers -v -count=1
 func TestGetSearchResults(t *testing.T) {
 	innertube := brooktube.New()
 
@@ -48,7 +48,7 @@ func TestGetSearchResults(t *testing.T) {
 
 // 	d, err := brooktube.GetSearchResults(
 // 		"black clover",
-// 		parsers.SearchParserParams{
+// 		scrapers.SearchParserParams{
 // 			Category: search.VIDEO_SEARCH_KEY,
 // 		},
 // 	)
@@ -70,7 +70,7 @@ func TestGetSearchResults(t *testing.T) {
 
 // 	d, err := brooktube.GetSearchResults(
 // 		"black clover",
-// 		parsers.SearchParserParams{
+// 		scrapers.SearchParserParams{
 // 			Category: search.ARTIST_SEARCH_KEY,
 // 		},
 // 	)
@@ -92,7 +92,7 @@ func TestGetSearchResults(t *testing.T) {
 
 // 	d, err := brooktube.GetSearchResults(
 // 		"black clover",
-// 		parsers.SearchParserParams{
+// 		scrapers.SearchParserParams{
 // 			Category: search.ALBUM_SEARCH_KEY,
 // 		},
 // 	)
@@ -114,7 +114,7 @@ func TestGetSearchResults(t *testing.T) {
 
 // 	d, err := brooktube.GetSearchResults(
 // 		"black clover",
-// 		parsers.SearchParserParams{
+// 		scrapers.SearchParserParams{
 // 			Category: search.COMMUNITY_PLAYLIST_SEARCH_KEY,
 // 		},
 // 	)

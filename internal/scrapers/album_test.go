@@ -1,4 +1,4 @@
-package parsers_test
+package scrapers_test
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// go test -run TestGetAlbum ./parsers -v -count=1
+// go test -run TestGetAlbum ./internal/scrapers -v -count=1
 func TestGetAlbum(t *testing.T) {
 	testsTable := []struct {
 		albumName string

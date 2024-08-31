@@ -1,4 +1,4 @@
-package parsers_test
+package scrapers_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// go test -run TestGetPlaylist ./parsers -v -count=1
+// go test -run TestGetPlaylist ./internal/scrapers -v -count=1
 func TestGetPlaylist(t *testing.T) {
 	testsTable := []struct {
 		name       string

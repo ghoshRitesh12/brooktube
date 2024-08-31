@@ -1,4 +1,4 @@
-package parsers_test
+package scrapers_test
 
 import (
 	"testing"
@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// go test -run TestGetArtist ./parsers -v -count=1
+// go test -run TestGetArtist ./internal/scrapers -v -count=1
 func TestGetArtist(t *testing.T) {
 	testsTable := []struct {
 		channelName string
