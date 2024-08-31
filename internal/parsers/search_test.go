@@ -1,4 +1,4 @@
-package scrapers_test
+package parsers_test
 
 import (
 	"testing"
@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// go test -run TestGetSearchResults ./internal/scrapers -v -count=1
+// go test -run TestGetSearchResults ./internal/parsers -v -count=1
 func TestGetSearchResults(t *testing.T) {
-	innertube := brooktube.New()
+	btube := brooktube.New()
 
 	testsTable := []struct {
 		query    string
@@ -23,8 +23,8 @@ func TestGetSearchResults(t *testing.T) {
 
 	for _, test := range testsTable {
 		t.Run(test.query, func(t *testing.T) {
-			// results, err := innertube.GetSearchResults(test.query, test.category)
-			result, err := innertube.Search.GetVideoResults(test.query)
+			// results, err := btube.GetSearchResults(test.query, test.category)
+			result, err := btube.Search.GetVideoResults(test.query)
 
 			assert.NoError(t, err)
 			assert.NotEmpty(t, result.Contents)
@@ -32,7 +32,7 @@ func TestGetSearchResults(t *testing.T) {
 
 			t.Run("continuation", func(t *testing.T) {
 				t.Parallel()
-				res, err := innertube.Search.GetNextVideoResults(test.query, result.Info.ContinuationToken)
+				res, err := btube.Search.GetNextVideoResults(test.query, result.Info.ContinuationToken)
 
 				assert.NoError(t, err)
 				assert.NotEmpty(t, res.Contents)
@@ -48,7 +48,7 @@ func TestGetSearchResults(t *testing.T) {
 
 // 	d, err := brooktube.GetSearchResults(
 // 		"black clover",
-// 		scrapers.SearchParserParams{
+// 		parsers.SearchParserParams{
 // 			Category: search.VIDEO_SEARCH_KEY,
 // 		},
 // 	)
@@ -70,7 +70,7 @@ func TestGetSearchResults(t *testing.T) {
 
 // 	d, err := brooktube.GetSearchResults(
 // 		"black clover",
-// 		scrapers.SearchParserParams{
+// 		parsers.SearchParserParams{
 // 			Category: search.ARTIST_SEARCH_KEY,
 // 		},
 // 	)
@@ -92,7 +92,7 @@ func TestGetSearchResults(t *testing.T) {
 
 // 	d, err := brooktube.GetSearchResults(
 // 		"black clover",
-// 		scrapers.SearchParserParams{
+// 		parsers.SearchParserParams{
 // 			Category: search.ALBUM_SEARCH_KEY,
 // 		},
 // 	)
@@ -114,7 +114,7 @@ func TestGetSearchResults(t *testing.T) {
 
 // 	d, err := brooktube.GetSearchResults(
 // 		"black clover",
-// 		scrapers.SearchParserParams{
+// 		parsers.SearchParserParams{
 // 			Category: search.COMMUNITY_PLAYLIST_SEARCH_KEY,
 // 		},
 // 	)
