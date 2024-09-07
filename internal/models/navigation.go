@@ -202,3 +202,49 @@ func (runs *NavigationAndWatchEndpointRuns) GetNavData(
 	videoId = run.NavigationEndpoint.WatchEndpoint.VideoID
 	return
 }
+
+//
+type TabRenderer struct {
+	Title string `json:"title,omitempty"`
+
+	Endpoint struct {
+		BrowseEndpoint struct {
+			BrowseID string `json:"browseId,omitempty"`
+
+			BrowseEndpointContextSupportedConfigs struct {
+				BrowseEndpointContextMusicConfig struct {
+					PageType string `json:"pageType,omitempty"`
+				} `json:"browseEndpointContextMusicConfig,omitempty"`
+			} `json:"browseEndpointContextSupportedConfigs,omitempty"`
+		} `json:"browseEndpoint,omitempty"`
+	} `json:"endpoint,omitempty"`
+
+	Unselectable bool `json:"unselectable,omitempty"`
+}
+
+// gets the title of the tab
+func (tr *TabRenderer) GetTabTitle() string {
+	if tr == nil {
+		return ""
+	}
+	return tr.Title
+}
+
+func (tr *TabRenderer) GetTabNavData() (pageType, browseId string) {
+	if tr == nil {
+		return
+	}
+
+	pageType = tr.Endpoint.BrowseEndpoint.
+		BrowseEndpointContextSupportedConfigs.
+		BrowseEndpointContextMusicConfig.PageType
+	browseId = tr.Endpoint.BrowseEndpoint.BrowseID
+	return
+}
+
+func (tr *TabRenderer) IsTabUnselectable() bool {
+	if tr == nil {
+		return false
+	}
+	return tr.Unselectable
+}
