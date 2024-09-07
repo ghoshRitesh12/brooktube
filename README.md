@@ -19,7 +19,7 @@ An unofficial YT Music scraper package made for [Brook](https://github.com/ghosh
 
 Checkout the scraper documentation [here](https://pkg.go.dev/github.com/ghoshRitesh12/brooktube/internal/parsers#section-documentation).
 
-> There are going to be somewhat like 5 parsers:
+> There are going to be somewhat like 6 parsers:
 >
 > - [x] Search parser
 >
@@ -28,5 +28,7 @@ Checkout the scraper documentation [here](https://pkg.go.dev/github.com/ghoshRit
 > - [x] [Album parser](https://music.youtube.com/playlist?list=OLAK5uy_kkypLq7TlpT3uYdH3MbuHDiF2J3u-BRjc)
 >
 > - [x] [Playlist parser](https://music.youtube.com/playlist?list=PLtwDCqqblBclwxAvPP0lTN56iWBjshBv7)
+>
+> - [x] Lyrics parser
 >
 > - [ ] Player parser
