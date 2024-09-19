@@ -14,7 +14,7 @@ func TestGetLyrics(t *testing.T) {
 		mediaName string
 		mediaId   string
 	}{
-		{"borderline by tape impala", "2g5xkLqIElU"},  // should pass
+		{"borderline by tape impala", "rymYToIEL9o"},  // should pass
 		{"yellow by yoh kamiyama", "waYhTInn7GU"},     // should pass
 		{"renegade by jayz ft eminem", "3JTLkJVDDE4"}, // should fail
 	}
