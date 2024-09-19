@@ -22,20 +22,16 @@ func GetAlbumBrowseId(albumId string) (string, error) {
 	}
 
 	url := constants.HOST + constants.PLAYLIST_PATH + albumId
-	headers := map[string]string{
-		"Accept":                   "*/*",
-		"User-Agent":               constants.USER_AGENT_HEADER,
-		"X-Goog-Visitor-Id":        constants.GOOG_VISITOR_ID,
-		"X-Youtube-Client-Version": constants.CLIENT_VERSION,
-	}
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return "", err
 	}
-	for key, value := range headers {
-		req.Header.Set(key, value)
-	}
+
+	req.Header.Set("Accept", "*/*")
+	req.Header.Set("User-Agent", constants.USER_AGENT_HEADER)
+	req.Header.Set("X-Goog-Visitor-Id", constants.GOOG_VISITOR_ID)
+	req.Header.Set("X-Youtube-Client-Version", constants.CLIENT_VERSION)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
