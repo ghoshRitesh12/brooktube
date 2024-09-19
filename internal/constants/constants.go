@@ -42,5 +42,5 @@ const (
 
 const (
 	OTHER_INFO_SEPARATOR string = " • "
-	EXPLICIT_ICON        string = "🅴"
+	EXPLICIT_ICON        rune   = '🅴'
 )
