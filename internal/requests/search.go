@@ -20,21 +20,21 @@ func FetchSearchResults(query string, category search.SearchCategory) (*search.A
 		return nil, err
 	}
 
-	body := map[string]any{}
+	reqBody := map[string]any{
+		"query":  query,
+		"params": searchParamsId,
+	}
+
 	queryParams := reqURL.Query()
-
-	body["query"] = query
-	body["params"] = searchParamsId
-
 	queryParams.Set("prettyPrint", "false")
 	reqURL.RawQuery = queryParams.Encode()
 
-	headers := map[string]string{
+	reqHeaders := map[string]string{
 		"X-Goog-Visitor-Id":        constants.GOOG_VISITOR_ID,
 		"X-Youtube-Client-Version": constants.CLIENT_VERSION,
 	}
 
-	data, err := fetch[search.APIResp](method, reqURL.String(), body, headers)
+	data, err := fetch[search.APIResp](method, reqURL.String(), reqBody, reqHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func FetchSearchResults(query string, category search.SearchCategory) (*search.A
 
 func FetchNextSearchResults(query, continuationToken string) (*search.APIRespContinuation, error) {
 	method := "POST"
-	body := map[string]any{}
+	reqBody := map[string]any{}
 	reqURL, err := url.Parse(constants.HOST + constants.SEARCH_PATH)
 	if err != nil {
 		return nil, err
@@ -57,12 +57,12 @@ func FetchNextSearchResults(query, continuationToken string) (*search.APIRespCon
 	queryParams.Set("prettyPrint", "false")
 	reqURL.RawQuery = queryParams.Encode()
 
-	headers := map[string]string{
+	reqHeaders := map[string]string{
 		"X-Goog-Visitor-Id":        constants.GOOG_VISITOR_ID,
 		"X-Youtube-Client-Version": constants.CLIENT_VERSION,
 	}
 
-	data, err := fetch[search.APIRespContinuation](method, reqURL.String(), body, headers)
+	data, err := fetch[search.APIRespContinuation](method, reqURL.String(), reqBody, reqHeaders)
 	if err != nil {
 		return nil, err
 	}
