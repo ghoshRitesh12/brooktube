@@ -6,85 +6,79 @@ import (
 	"github.com/ghoshRitesh12/brooktube/internal/requests"
 )
 
-// {query} is the song search query
+// [query] is the song search query
 func (SearchScraper) GetSongResults(query string) (*search.ScrapedSongResult, error) {
 	result := &search.ScrapedSongResult{}
 	return getSearchResults(query, result, &result.Contents)
 }
 
-// {query} is the song search query
-//
-// {continuationToken} is the token used for fetching paginated data
+// [query] is the song search query,
+// [continuationToken] is the token used for fetching paginated data
 func (SearchScraper) GetNextSongResults(query, continuationToken string) (*search.ScrapedSongResult, error) {
 	result := &search.ScrapedSongResult{}
 	return getNextSearchResults(query, continuationToken, result, &result.Contents)
 }
 
-// {query} is the video search query
+// [query] is the video search query
 func (SearchScraper) GetVideoResults(query string) (*search.ScrapedVideoResult, error) {
 	result := &search.ScrapedVideoResult{}
 	return getSearchResults(query, result, &result.Contents)
 }
 
-// {query} is the video search query
-//
-// {continuationToken} is the token used for fetching paginated data
+// [query] is the video search query,
+// [continuationToken] is the token used for fetching paginated data
 func (SearchScraper) GetNextVideoResults(query, continuationToken string) (*search.ScrapedVideoResult, error) {
 	result := &search.ScrapedVideoResult{}
 	return getNextSearchResults(query, continuationToken, result, &result.Contents)
 }
 
-// {query} is the artist search query
+// [query] is the artist search query
 func (SearchScraper) GetArtistResults(query string) (*search.ScrapedArtistResult, error) {
 	result := &search.ScrapedArtistResult{}
 	return getSearchResults(query, result, &result.Contents)
 }
 
-// {query} is the artist search query
-//
-// {continuationToken} is the token used for fetching paginated data
+// [query] is the artist search query,
+// [continuationToken] is the token used for fetching paginated data
 func (SearchScraper) GetNextArtistResults(query, continuationToken string) (*search.ScrapedArtistResult, error) {
 	result := &search.ScrapedArtistResult{}
 	return getNextSearchResults(query, continuationToken, result, &result.Contents)
 }
 
-// {query} is the album search query
+// [query] is the album search query
 func (SearchScraper) GetAlbumResults(query string) (*search.ScrapedAlbumResult, error) {
 	result := &search.ScrapedAlbumResult{}
 	return getSearchResults(query, result, &result.Contents)
 }
 
-// {query} is the album search query
-//
-// {continuationToken} is the token used for fetching paginated data
+// [query] is the album search query,
+// [continuationToken] is the token used for fetching paginated data
 func (SearchScraper) GetNextAlbumResults(query, continuationToken string) (*search.ScrapedAlbumResult, error) {
 	result := &search.ScrapedAlbumResult{}
 	return getNextSearchResults(query, continuationToken, result, &result.Contents)
 }
 
-// {query} is the community playlist search query
+// [query] is the community playlist search query
 func (SearchScraper) GetCommunityPlaylistResults(query string) (*search.ScrapedCommunityPlaylistResult, error) {
 	result := &search.ScrapedCommunityPlaylistResult{}
 	return getSearchResults(query, result, &result.Contents)
 }
 
-// {query} is the community playlist search query
-//
-// {continuationToken} is the token used for fetching paginated data
+// [query] is the community playlist search query,
+// [continuationToken] is the token used for fetching paginated data
 func (SearchScraper) GetNextCommunityPlaylistResults(query, continuationToken string) (*search.ScrapedCommunityPlaylistResult, error) {
 	result := &search.ScrapedCommunityPlaylistResult{}
 	return getNextSearchResults(query, continuationToken, result, &result.Contents)
 }
 
-// {query} is the featured playlist search query
+// [query] is the featured playlist search query
 func (SearchScraper) GetFeaturedPlaylistResults(query string) (*search.ScrapedFeaturedPlaylistResult, error) {
 	result := &search.ScrapedFeaturedPlaylistResult{}
 	return getSearchResults(query, result, &result.Contents)
 }
 
-// {query} is the featured playlist search query
-//
-// {continuationToken} is the token used for fetching paginated data
+// [query] is the featured playlist search query,
+// [continuationToken] is the token used for fetching paginated data
 func (SearchScraper) GetNextFeaturedPlaylistResults(query, continuationToken string) (*search.ScrapedFeaturedPlaylistResult, error) {
 	result := &search.ScrapedFeaturedPlaylistResult{}
 	return getNextSearchResults(query, continuationToken, result, &result.Contents)
